@@ -1,2 +1,0 @@
-# BoostProjects
-Boost C++ experiments
