@@ -301,7 +301,7 @@ int main([[maybe_unused]] int argc,
 {
     // Multithreading::SimpleAsynchTest()
 
-    JsonBoost::TestAll();
+    // JsonBoost::TestAll();
 
     // BoostMathTests::TestAll();
     // Spirit::TestAll();
@@ -320,7 +320,7 @@ int main([[maybe_unused]] int argc,
 
     // Serial::TestAll();
 
-    // Networking::TestAll();
+     Networking::TestAll();
 
     // Callback::testCallback();
 

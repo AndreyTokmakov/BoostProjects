@@ -637,16 +637,19 @@ namespace Networking::TCP::Echo
 
 namespace Networking::Basics
 {
+    namespace ip = boost::asio::ip;
+    using tcp = boost::asio::ip::tcp;
+
     void createAcceptorSocket()
     {
         //An instance of 'io_service' class is required by socket constructor.
         asio::io_service ios;
 
         // Creating an object of 'tcp' class representing a TCP protocol with IPv6 as underlying protocol.
-        asio::ip::tcp protocol = asio::ip::tcp::v6();
+        ip::tcp protocol = asio::ip::tcp::v6();
 
         // Instantiating an acceptor socket object.
-        asio::ip::tcp::acceptor acceptor(ios);
+        ip::tcp::acceptor acceptor(ios);
 
         // Used to store information about error that happens while opening the acceptor socket.
         boost::system::error_code ec;
@@ -657,6 +660,29 @@ namespace Networking::Basics
             // Failed to open the socket.
             std::cout << "Failed to open the acceptor socket! Error code = "
                       << ec.value() << ". Message: " << ec.message();
+        }
+    }
+
+    void acceptConnections()
+    {
+        constexpr uint16_t port = 52525, backlog = 10;
+
+        asio::io_service ios; // An instance of 'io_service' class is required by socket constructor.
+        tcp::endpoint ep(ip::address_v4::any(), port); // Creating a server endpoint.
+
+        try
+        {
+            tcp::acceptor acceptor(ios, ep.protocol()); // Instantiating an acceptor socket object.
+            acceptor.bind(ep);      // Binding the acceptor socket to the server endpoint.
+            acceptor.listen(backlog);       // Starting to listen for incoming connection requests.
+            tcp::socket clientSock(ios); // Creating an active socket.
+            acceptor.accept(clientSock); // Accept the incoming connecting the active socket to the client.
+
+            std::cout << "Connection accepted. Exiting...\n";
+        }
+        catch (const boost::system::error_code& exc)
+        {
+            std::cout << "Error occurred! Error code = " << exc.value() << ". Message: " << exc.message();
         }
     }
 
@@ -709,6 +735,7 @@ void Networking::TestAll()
 {
 
     // Basics::createAcceptorSocket();
+    Basics::acceptConnections();
     // Basics::resolveDNS();
     // Basics::connectToSocket();
 
