@@ -723,10 +723,84 @@ namespace Networking::Basics
             sock.connect(server);
         }
         catch (boost::system::system_error &e) {
-            std::cout << "Error occured! Error code = " << e.code() << ". Message: " << e.what();
+            std::cout << "Error occurred! Error code = " << e.code() << ". Message: " << e.what();
         }
     }
 
+    void write_to_socket(asio::ip::tcp::socket& sock)
+    {
+        constexpr std::string_view msg { "Hello"sv };
+        std::size_t bytesSend = 0;
+
+        // Run the loop until all data is written to the socket.
+        while (bytesSend != msg.length()) {
+            bytesSend += sock.write_some(
+                    asio::buffer(msg.data() + bytesSend, msg.length() - bytesSend)
+            );
+        }
+    }
+
+    void writeToSocket()
+    {
+        constexpr std::string_view host { "0.0.0.0"sv };
+        constexpr uint16_t portNum { 52525 };
+
+        try {
+            asio::ip::tcp::endpoint server(asio::ip::address::from_string(host.data()),portNum);
+            asio::io_service ios;
+            asio::ip::tcp::socket sock(ios, server.protocol());
+            sock.connect(server);
+
+            write_to_socket(sock);
+        }
+        catch (boost::system::system_error &e) {
+            std::cout << "Error occurred! Error code = " << e.code() << ". Message: " << e.what();
+            //return e.code().value();
+        }
+    }
+
+    std::string read_from_socket(asio::ip::tcp::socket& sock)
+    {
+        std::cout << "read_from_socket" << std::endl;
+        // std::array<char, 16> buffer {};
+
+        char data[512];
+        [[maybe_unused]]
+        size_t len = sock.read_some(asio::buffer(data));
+
+        return {};
+    }
+
+    std::string read_from_socket2(asio::ip::tcp::socket& sock)
+    {
+        std::cout << "read_from_socket2" << std::endl;
+
+        std::array<char, 16> buffer {};
+        std::size_t bytesRead { 0 };
+        asio::read(sock, asio::buffer(buffer.data(), buffer.size()));
+        return std::string { buffer.data(), bytesRead };
+    }
+
+    void writeAndReadFromSocket()
+    {
+        constexpr std::string_view host { "0.0.0.0"sv };
+        constexpr uint16_t portNum { 52525 };
+
+        try {
+            asio::ip::tcp::endpoint server(asio::ip::address::from_string(host.data()),portNum);
+            asio::io_service ios;
+            asio::ip::tcp::socket sock(ios, server.protocol());
+            sock.connect(server);
+
+            write_to_socket(sock);
+            read_from_socket(sock);
+            // read_from_socket2(sock);
+        }
+        catch (boost::system::system_error &e) {
+            std::cout << "Error occurred! Error code = " << e.code() << ". Message: " << e.what();
+            //return e.code().value();
+        }
+    }
 }
 
 
@@ -735,9 +809,11 @@ void Networking::TestAll()
 {
 
     // Basics::createAcceptorSocket();
-    Basics::acceptConnections();
+    // Basics::acceptConnections();
     // Basics::resolveDNS();
     // Basics::connectToSocket();
+    // Basics::writeToSocket();
+    Basics::writeAndReadFromSocket();
 
     // Networking::server();
     // Networking::client();

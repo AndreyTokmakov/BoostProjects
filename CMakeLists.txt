@@ -36,7 +36,7 @@ add_executable(BoostProjects
         Spirit/Spirit.cpp Spirit/Spirit.h
         ProgramOptions/ProgramOptions.cpp ProgramOptions/ProgramOptions.h
         Logging/Logging.cpp Logging/Logging.h Uuid/Uuid.cpp Uuid/Uuid.h
-        Timer/Timer.cpp Timer/Timer.h Threads/Threads.cpp Threads/Threads.h DateTime/DateTime.cpp DateTime/DateTime.h Serial/Serial.cpp Serial/Serial.h Networking/Networking.cpp Networking/Networking.h)
+        Timer/Timer.cpp Timer/Timer.h Threads/Threads.cpp Threads/Threads.h DateTime/DateTime.cpp DateTime/DateTime.h Serial/Serial.cpp Serial/Serial.h Networking/Networking.cpp Networking/Networking.h Buffers/Buffers.cpp Buffers/Buffers.h)
 
 
 # Link phread library

@@ -35,6 +35,7 @@
 #include <boost/algorithm/hex.hpp>
 #include <boost/asio/ssl.hpp>
 
+#include "Buffers/Buffers.h"
 #include "Math/BoostMathTests.h"
 #include "Json/Json.h"
 #include "Spirit/Spirit.h"
@@ -299,30 +300,21 @@ namespace Callback
 int main([[maybe_unused]] int argc,
          [[maybe_unused]] char** argv)
 {
-    // Multithreading::SimpleAsynchTest()
-
-    // JsonBoost::TestAll();
-
     // BoostMathTests::TestAll();
-    // Spirit::TestAll();
-
+    // Buffers::TestAll();
+    // Callback::testCallback();
+    // DateTime::TestAll();
+    // JsonBoost::TestAll();
     // ProgramOptions::TestAll(argc, argv);
-
     // Logging::TestAll();
-
+    // Multithreading::SimpleAsynchTest()
+    Networking::TestAll();
     // Uuid::TestAll();
-
+    // Serial::TestAll();
+    // Spirit::TestAll();
     // Timer::TestAll();
-
     // Threads::TestAll();
 
-    // DateTime::TestAll();
-
-    // Serial::TestAll();
-
-     Networking::TestAll();
-
-    // Callback::testCallback();
 
     /*
     MD5::Test1();
