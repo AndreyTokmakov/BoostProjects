@@ -8,6 +8,9 @@ Description : Networking
 ============================================================================**/
 
 #include "Networking.h"
+#include "UDPEchoServerClient.h"
+#include "TCPEchoServerClient.h"
+#include "HTTPServer.h"
 
 #include <iostream>
 
@@ -433,208 +436,6 @@ namespace Networking::SSL2
 }
 
 
-namespace Networking::UDP::Echo
-{
-    using asio::ip::udp;
-    using namespace Utilities;
-
-    class serverAsync
-    {
-    private:
-        static constexpr inline size_t maxLength = 1024;
-
-        udp::socket socket;
-        udp::endpoint senderEndpoint;
-        char data [maxLength];
-
-    public:
-        serverAsync(asio::io_context& io_context, short port):
-                socket(io_context, udp::endpoint(udp::v4(), port))
-        {
-            log();
-            do_receive();
-        }
-
-        void do_receive()
-        {
-            log();
-            socket.async_receive_from(asio::buffer(data, maxLength), senderEndpoint,
-                                      [this](std::error_code ec, std::size_t bytesReceived){
-                log(std::to_string(bytesReceived).append(" bytes received"));
-                if (!ec && bytesReceived > 0) {
-                    do_send(bytesReceived);
-                } else {
-                    log();
-                    do_receive();
-                }
-            });
-        }
-
-        void do_send(std::size_t length)
-        {
-            log();
-            socket.async_send_to(asio::buffer(data, length), senderEndpoint,
-                                 [this](std::error_code /*ec*/, std::size_t /*bytes_sent*/){
-                do_receive();
-            });
-        }
-    };
-
-
-    void startServer()
-    {
-        try {
-            asio::io_context io_context;
-            serverAsync s(io_context, 10525);
-            io_context.run();
-        } catch (std::exception& e) {
-            std::cerr << "Exception: " << e.what() << "\n";
-        }
-    }
-
-
-    void startClient()
-    {
-        constexpr size_t maxLength = 1024;
-
-        try
-        {
-            asio::io_context io_context;
-            udp::socket s(io_context, udp::endpoint(udp::v4(), 0));
-
-            udp::resolver resolver(io_context);
-            udp::endpoint endpoint = *resolver.resolve(udp::v4(), "0.0.0.0", "10525").begin();
-
-            constexpr std::string_view request { "TEST_DATA" };
-            s.send_to(asio::buffer(request, request.size()), endpoint);
-
-            char reply[maxLength];
-            udp::endpoint sender_endpoint;
-            size_t reply_length = s.receive_from(
-                    asio::buffer(reply, maxLength), sender_endpoint);
-            std::cout << "Reply is: ";
-            std::cout.write(reply, reply_length);
-            std::cout << "\n";
-        }
-        catch (std::exception& e)
-        {
-            std::cerr << "Exception: " << e.what() << "\n";
-        }
-    }
-}
-
-namespace Networking::TCP::Echo
-{
-    using asio::ip::tcp;
-    using namespace Utilities;
-
-    static constexpr inline size_t maxLength = 1024;
-    static constexpr inline uint16_t serverPort = 10525;
-
-    class session: public std::enable_shared_from_this<session>
-    {
-    public:
-        explicit session(tcp::socket socket) : socket(std::move(socket)){
-        }
-
-        void start() {
-            do_read();
-        }
-
-    private:
-        void do_read()
-        {
-            log();
-            auto self(shared_from_this());
-            socket.async_read_some(asio::buffer(data, maxLength),
-                                    [this, self](std::error_code ec, std::size_t length){
-                if (!ec) {
-                    do_write(length);
-                }
-            });
-        }
-
-        void do_write(std::size_t length)
-        {
-            log();
-            auto self(shared_from_this());
-            asio::async_write(socket, asio::buffer(data, length),
-                              [this, self](std::error_code ec, std::size_t /*length*/){
-                if (!ec){
-                    do_read();
-                }
-            });
-        }
-
-        tcp::socket socket;
-        char data[maxLength]{};
-    };
-
-    class server
-    {
-    public:
-        server(asio::io_context& io_context, short port):
-            acceptor(io_context, tcp::endpoint(tcp::v4(), port)),
-            socket(io_context)
-        {
-            log();
-            do_accept();
-        }
-
-    private:
-        void do_accept()
-        {
-            log();
-            acceptor.async_accept(socket,[this](std::error_code ec){
-                if (!ec) {
-                    std::make_shared<session>(std::move(socket))->start();
-                }
-                do_accept();
-            });
-        }
-
-        tcp::acceptor acceptor;
-        tcp::socket socket;
-    };
-
-    void startServer()
-    {
-        try
-        {
-            asio::io_context io_context;
-            server s(io_context, serverPort);
-            io_context.run();
-        } catch (std::exception& e) {
-            std::cerr << "Exception: " << e.what() << "\n";
-        }
-    }
-
-    void client()
-    {
-        try {
-            asio::io_context io_context;
-
-            tcp::socket s(io_context);
-            tcp::resolver resolver(io_context);
-            asio::connect(s, resolver.resolve( "0.0.0.0", std::to_string(serverPort)));
-
-
-            constexpr std::string_view request { "TEST_DATA" };
-            asio::write(s, asio::buffer(request, request.size()));
-
-            char reply[maxLength];
-            size_t reply_length = asio::read(s, asio::buffer(reply, request.size()));
-            std::cout << "Reply is: ";
-            std::cout.write(reply, reply_length);
-            std::cout << "\n";
-        }
-        catch (std::exception& e)
-        {
-            std::cerr << "Exception: " << e.what() << "\n";
-        }
-    }
-}
-
 namespace Networking::Basics
 {
     namespace ip = boost::asio::ip;
@@ -759,29 +560,35 @@ namespace Networking::Basics
         }
     }
 
-    std::string read_from_socket(asio::ip::tcp::socket& sock)
+    std::string read_from_socket_all(asio::ip::tcp::socket& sock)
     {
-        std::cout << "read_from_socket" << std::endl;
-        // std::array<char, 16> buffer {};
+        constexpr size_t replyLen = 128;
+        std::array<char, replyLen> buffer {};
 
-        char data[512];
-        [[maybe_unused]]
-        size_t len = sock.read_some(asio::buffer(data));
-
-        return {};
-    }
-
-    std::string read_from_socket2(asio::ip::tcp::socket& sock)
-    {
-        std::cout << "read_from_socket2" << std::endl;
-
-        std::array<char, 16> buffer {};
-        std::size_t bytesRead { 0 };
-        asio::read(sock, asio::buffer(buffer.data(), buffer.size()));
+        size_t bytesRead = sock.read_some(asio::buffer(buffer));
         return std::string { buffer.data(), bytesRead };
     }
 
-    void writeAndReadFromSocket()
+    std::string read_from_socket_size(asio::ip::tcp::socket& sock)
+    {
+        constexpr size_t replyLen = 5;
+        std::array<char, replyLen> buffer {};
+
+        size_t bytesRead = asio::read(sock, asio::buffer(buffer, replyLen));
+        return std::string { buffer.data(), bytesRead };
+    }
+
+    std::string read_from_socket_until_delim(asio::ip::tcp::socket& sock, const char delim = '\n')
+    {
+        asio::streambuf buf;
+        asio::read_until(sock, buf, delim);
+        std::string message;
+        std::istream input_stream(&buf);
+        std::getline(input_stream, message);
+        return message;
+    }
+
+    void writeToSocketAndRead()
     {
         constexpr std::string_view host { "0.0.0.0"sv };
         constexpr uint16_t portNum { 52525 };
@@ -793,8 +600,33 @@ namespace Networking::Basics
             sock.connect(server);
 
             write_to_socket(sock);
-            read_from_socket(sock);
-            // read_from_socket2(sock);
+
+            std::string reply = read_from_socket_all(sock);
+            // std::string reply = read_from_socket_size(sock);
+
+            std::cout << reply << std::endl;
+        }
+        catch (boost::system::system_error &e) {
+            std::cout << "Error occurred! Error code = " << e.code() << ". Message: " << e.what();
+            //return e.code().value();
+        }
+    }
+
+    void writeToSocketAndReadUntil()
+    {
+        constexpr std::string_view host { "0.0.0.0"sv };
+        constexpr uint16_t portNum { 52525 };
+
+        try {
+            asio::ip::tcp::endpoint server(asio::ip::address::from_string(host.data()),portNum);
+            asio::io_service ios;
+            asio::ip::tcp::socket sock(ios, server.protocol());
+            sock.connect(server);
+
+            write_to_socket(sock);
+
+            std::string reply = read_from_socket_until_delim(sock, '|');
+            std::cout << reply << std::endl;
         }
         catch (boost::system::system_error &e) {
             std::cout << "Error occurred! Error code = " << e.code() << ". Message: " << e.what();
@@ -813,7 +645,8 @@ void Networking::TestAll()
     // Basics::resolveDNS();
     // Basics::connectToSocket();
     // Basics::writeToSocket();
-    Basics::writeAndReadFromSocket();
+    // Basics::writeToSocketAndRead();
+    // Basics::writeToSocketAndReadUntil();
 
     // Networking::server();
     // Networking::client();
@@ -822,11 +655,10 @@ void Networking::TestAll()
     // Networking::HTTP::sendRequestGET();
 
 
-    // UDP::Echo::startServer();
-    // UDP::Echo::startClient();
+    // UDPEchoServerClient::TestAll();
+    // TCPEchoServerClient::TestAll();
 
-    // TCP::Echo::startServer();
-    // TCP::Echo::client();
+    HTTPServer::TestAll();
 
 
     // SSL2::runServer();
