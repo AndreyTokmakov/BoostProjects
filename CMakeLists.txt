@@ -36,12 +36,12 @@ add_executable(BoostProjects
         Spirit/Spirit.cpp Spirit/Spirit.h
         ProgramOptions/ProgramOptions.cpp ProgramOptions/ProgramOptions.h
         Logging/Logging.cpp Logging/Logging.h Uuid/Uuid.cpp Uuid/Uuid.h
-        Timer/Timer.cpp Timer/Timer.h Threads/Threads.cpp Threads/Threads.h DateTime/DateTime.cpp DateTime/DateTime.h Serial/Serial.cpp Serial/Serial.h Networking/Networking.cpp Networking/Networking.h Buffers/Buffers.cpp Buffers/Buffers.h Networking/TCPEchoServerClient.cpp Networking/TCPEchoServerClient.h Networking/UDPEchoServerClient.cpp Networking/UDPEchoServerClient.h Networking/HTTPServer.cpp Networking/HTTPServer.h)
+        Timer/Timer.cpp Timer/Timer.h Threads/Threads.cpp Threads/Threads.h DateTime/DateTime.cpp DateTime/DateTime.h Serial/Serial.cpp Serial/Serial.h Networking/Networking.cpp Networking/Networking.h Buffers/Buffers.cpp Buffers/Buffers.h Networking/TCPEchoServerClient.cpp Networking/TCPEchoServerClient.h Networking/UDPEchoServerClient.cpp Networking/UDPEchoServerClient.h Networking/HTTPServer.cpp Networking/HTTPServer.h Tokenizer/Tokenizer.cpp Tokenizer/Tokenizer.h Communication/Interprocess.cpp Communication/Interprocess.h)
 
 
 # Link phread library
 TARGET_LINK_LIBRARIES(BoostProjects pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}
-        boost_timer
+        boost_timer  -lrt
 )

@@ -34,6 +34,7 @@
 #include <boost/uuid/detail/md5.hpp>
 #include <boost/algorithm/hex.hpp>
 #include <boost/asio/ssl.hpp>
+#include <boost/tokenizer.hpp>
 
 #include "Buffers/Buffers.h"
 #include "Math/BoostMathTests.h"
@@ -46,6 +47,8 @@
 #include "DateTime/DateTime.h"
 #include "Serial/Serial.h"
 #include "Networking/Networking.h"
+#include "Tokenizer/Tokenizer.h"
+#include "Communication/Interprocess.h"
 
 #include "ProgramOptions/ProgramOptions.h"
 
@@ -297,6 +300,7 @@ namespace Callback
     }
 }
 
+
 int main([[maybe_unused]] int argc,
          [[maybe_unused]] char** argv)
 {
@@ -305,16 +309,17 @@ int main([[maybe_unused]] int argc,
     // Callback::testCallback();
     // DateTime::TestAll();
     // JsonBoost::TestAll();
+    Interprocess::TestAll(argc, argv);
     // ProgramOptions::TestAll(argc, argv);
     // Logging::TestAll();
     // Multithreading::SimpleAsynchTest()
-    Networking::TestAll();
+    // Networking::TestAll();
     // Uuid::TestAll();
     // Serial::TestAll();
     // Spirit::TestAll();
     // Timer::TestAll();
     // Threads::TestAll();
-
+    // Tokenizer::TestAll(argc, argv);
 
     /*
     MD5::Test1();

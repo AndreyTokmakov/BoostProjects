@@ -32,7 +32,7 @@ namespace JsonBoost {
 
     void Simple_Parse()
     {
-        constexpr std::string_view path {R"(../../BoostProject/data/test.json)"};
+        constexpr std::string_view path {R"(../data/test.json)"};
 
         boost::property_tree::ptree pt;
         boost::property_tree::read_json( path.data(), pt );
@@ -126,7 +126,10 @@ namespace JsonBoost {
         boost::property_tree::write_json(std::cout, root);
     }
 
-    void WriteJsonTest_ToFile() {
+    void WriteJsonTest_ToFile()
+    {
+        constexpr std::string_view path {R"(../data/out.json)"};
+
         boost::property_tree::ptree root;
         root.put<int>("height", 1223);
         root.put("some.complex.path", "bonjour");
@@ -138,16 +141,136 @@ namespace JsonBoost {
         root.push_back(std::make_pair("fish", fish1));
         root.push_back(std::make_pair("fish", fish2));
 
-        boost::property_tree::write_json(R"(/home/andtokm/Projects/CppProjects/BoostProject/data/out.json)", root);
+        boost::property_tree::write_json(path.data(), root);
+    }
+}
+
+namespace JsonBoost::AccessingData
+{
+    void accessing_data ()
+    {
+        PTree pt;
+        pt.put("C:.Windows.System", "20 files");
+
+        PTree &c = pt.get_child("C:");
+        PTree &windows = c.get_child("Windows");
+        PTree &system = windows.get_child("System");
+        std::cout << system.get_value<std::string>() << '\n';
+    }
+
+    void accessing_data2()
+    {
+        PTree pt;
+        pt.put(PTree::path_type{"C:\\Windows\\System", '\\'}, 20);
+        pt.put(PTree::path_type{"C:\\Windows\\Cursors", '\\'}, 50);
+
+        PTree &windows = pt.get_child(PTree::path_type{"C:\\Windows", '\\'});
+        int files = 0;
+        for (const auto &p : windows) {
+            std::cout << "Path: " << p.first << ", files count: " << p.second.get_value<int>() << std::endl;
+            files += p.second.get_value<int>();
+        }
+        std::cout << files << '\n';
+    }
+
+    struct string_to_int_translator
+    {
+        using internal_type = std::string;
+        using external_type = int;
+
+        boost::optional<int> get_value(const std::string &s)
+        {
+            char *c;
+            long l = std::strtol(s.c_str(), &c, 10);
+            return boost::make_optional(c != s.c_str(), static_cast<int>(l));
+        }
+    };
+
+    void accessing_data_translator()
+    {
+        PTree pt;
+        pt.put(PTree::path_type{"C:\\Windows\\System", '\\'}, "20 files");
+        pt.put(PTree::path_type{"C:\\Windows\\Cursors", '\\'}, "50 files");
+
+        string_to_int_translator tr {};
+        const int files = pt.get<int>(PTree::path_type{"c:\\windows\\system", '\\'}, tr) +
+                pt.get<int>(PTree::path_type{"c:\\windows\\cursors", '\\'}, tr);
+
+        std::cout << files << '\n';
+    }
+
+    void get_optional()
+    {
+        {
+            PTree root;
+            root.put("C:", "20 files");
+            boost::optional<std::string> c = root.get_optional<std::string>("C:");
+            if (c.is_initialized()) {
+                std::cout << "Value: " << c.value() << std::endl;
+            }
+        }
+
+        {
+            PTree root;
+            root.put("D:", "20 files");
+            boost::optional<std::string> c = root.get_optional<std::string>("C:");
+            if (!c.is_initialized()) {
+                std::cout << "Not exists\n";
+            }
+        }
+    }
+
+    void get_child_optional()
+    {
+        PTree root;
+        root.put("C:.Windows.System", "Some_Secret");
+        if (boost::optional<PTree&> node = root.get_child_optional("C:"); node) {
+            if (boost::optional<PTree&> windows = node.value().get_child_optional("Windows"); windows) {
+                if (boost::optional<std::string> sys = windows.value().get_optional<std::string>("System"); sys)
+                {
+                    std::cout << "System: " << sys.value() << std::endl;
+                }
+            }
+        }
+    }
+
+    void various_member_functions ()
+    {
+        PTree root;
+        {
+            root.put("C:.Windows.System", "20 files");
+
+            boost::optional<std::string> c = root.get_optional<std::string>("C:");
+            std::cout << std::boolalpha << c.is_initialized() << '\n';
+
+            root.put_child("D:.Program Files", PTree{"50 files"});
+            root.add_child("D:.Program Files", PTree{"60 files"});
+        }
+
+        PTree d = root.get_child("D:");
+        for (const auto &p : d)
+            std::cout << p.second.get_value<std::string>() << '\n';
+
+        boost::optional<PTree&> e = root.get_child_optional("E:");
+        std::cout << e.is_initialized() << '\n';
     }
 }
 
 void JsonBoost::TestAll() 
 {
     // Simple_Parse();
-    Parse_EigenVector();
+    // Parse_EigenVector();
 
     // WriteJsonTest_COUT();
     // WriteJsonTest_COUT2();
     // WriteJsonTest_ToFile();
+
+    // AccessingData::accessing_data();
+    // AccessingData::accessing_data2();
+    // AccessingData::accessing_data_translator();
+    // AccessingData::various_member_functions();
+
+
+    // AccessingData::get_optional();
+    AccessingData::get_child_optional();
 }
