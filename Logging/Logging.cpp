@@ -21,7 +21,9 @@ Description : Logging
 #include "Logging.h"
 
 #include <boost/log/trivial.hpp>
-
+#include <boost/log/sinks.hpp>
+#include <boost/log/sources/logger.hpp>
+#include <boost/shared_ptr.hpp>
 
 
 namespace logging = boost::log;
@@ -38,8 +40,6 @@ namespace BasicExamples
         BOOST_LOG_TRIVIAL(fatal) << "A fatal severity message";
     }
 
-
-
     void init_logging()
     {
         /*
@@ -49,8 +49,8 @@ namespace BasicExamples
         */
     }
 
-
-    void Filering() {
+    void Filering()
+    {
         using namespace boost::log;
 
         // Trivial logging: all log records are written into a file
@@ -64,10 +64,31 @@ namespace BasicExamples
         BOOST_LOG_TRIVIAL(error) << "An error severity message";
         BOOST_LOG_TRIVIAL(fatal) << "A fatal severity message";
     }
-
-
 }
 
+namespace
+{
+
+    /*
+    void test()
+    {
+        using namespace boost::log;
+        using text_sink = sinks::asynchronous_sink<sinks::text_ostream_backend>;
+        boost::shared_ptr<text_sink> sink = boost::make_shared<text_sink>();
+
+        boost::shared_ptr<std::ostream> stream { &std::clog, boost::empty_deleter{} };
+        sink->locked_backend()->add_stream(stream);
+
+        core::get()->add_sink(sink);
+
+        sources::logger lg;
+
+        BOOST_LOG(lg) << "note";
+        sink->flush();
+    }
+    */
+
+}
 
 void Logging::TestAll()
 {

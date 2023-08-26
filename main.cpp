@@ -49,7 +49,7 @@
 #include "Networking/Networking.h"
 #include "Tokenizer/Tokenizer.h"
 #include "Communication/Interprocess.h"
-
+#include "Collections/CircularBuffer.h"
 #include "ProgramOptions/ProgramOptions.h"
 
 
@@ -309,7 +309,7 @@ int main([[maybe_unused]] int argc,
     // Callback::testCallback();
     // DateTime::TestAll();
     // JsonBoost::TestAll();
-    Interprocess::TestAll(argc, argv);
+    // Interprocess::TestAll(argc, argv);
     // ProgramOptions::TestAll(argc, argv);
     // Logging::TestAll();
     // Multithreading::SimpleAsynchTest()
@@ -320,6 +320,8 @@ int main([[maybe_unused]] int argc,
     // Timer::TestAll();
     // Threads::TestAll();
     // Tokenizer::TestAll(argc, argv);
+
+    CircularBuffer::TestAll();
 
     /*
     MD5::Test1();
