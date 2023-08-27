@@ -200,9 +200,8 @@ namespace Networking::SSL1
 
         void start()
         {
-            socket_.async_handshake(
-                    asio::ssl::stream_base::server,boost::bind(
-                            &session::handle_handshake,this,asio::placeholders::error));
+            socket_.async_handshake(asio::ssl::stream_base::server,
+                                    boost::bind(&session::handle_handshake,this,asio::placeholders::error));
         }
 
         void handle_handshake(const boost::system::error_code& error)
@@ -248,26 +247,25 @@ namespace Networking::SSL1
 
     private:
         ssl_socket socket_;
-        enum { max_length = 1024 };
+        static constexpr size_t max_length = 1024;
         char data_[max_length];
     };
 
     class server
     {
     public:
-        server(asio::io_service& io_service, unsigned short port)
-                : io_service_(io_service),
-                  acceptor_(io_service,
-                            asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),
-                  context_(asio::ssl::context::sslv23)
+        server(asio::io_service& io_service, unsigned short port):
+                io_service_(io_service),
+                acceptor_(io_service,asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),
+                context_(asio::ssl::context::sslv23)
         {
             context_.set_options(asio::ssl::context::default_workarounds |
-                                         asio::ssl::context::no_sslv2 |
-                                         asio::ssl::context::single_dh_use);
+                                    asio::ssl::context::no_sslv2 |
+                                    asio::ssl::context::single_dh_use);
             context_.set_password_callback(boost::bind(&server::get_password, this));
-            context_.use_certificate_chain_file("server.pem");
-            context_.use_private_key_file("server.pem", asio::ssl::context::pem);
-            context_.use_tmp_dh_file("dh2048.pem");
+            context_.use_certificate_chain_file("/home/andtokm/Projects/BoostProjects/data/server.pem");
+            context_.use_private_key_file("/home/andtokm/Projects/BoostProjects/data/key.pem", asio::ssl::context::pem);
+            // context_.use_tmp_dh_file("dh2048.pem");
 
             start_accept();
         }
@@ -301,6 +299,10 @@ namespace Networking::SSL1
         asio::ip::tcp::acceptor acceptor_;
         asio::ssl::context context_;
     };
+
+    // How to create a self-signed PEM file:
+    // openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem
+    //
 
     void runServer()
     {
@@ -635,6 +637,67 @@ namespace Networking::Basics
     }
 }
 
+/*
+namespace SSL3
+{
+
+    using asio::ip::tcp;
+
+    void handle_request(asio::ssl::stream<tcp::socket>& socket,
+                        asio::streambuf& buffer)
+    {
+        std::istream request_stream(&buffer);
+        std::string request_line;
+        std::getline(request_stream, request_line);
+
+        std::cout << "Request: " << request_line << std::endl;
+
+        std::string response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!";
+        boost::asio::write(socket, boost::asio::buffer(response));
+    }
+
+    void start_ssl_server()
+    {
+        asio::io_service io_service;
+
+        asio::ssl::context context(boost::asio::ssl::context::sslv23);
+
+        context.use_certificate_file("server.crt", asio::ssl::context::pem);
+        context.use_private_key_file("server.key", asio::ssl::context::pem);
+
+        asio::ip::tcp::acceptor acceptor(io_service, asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 4443));
+
+        asio::ip::tcp::socket socket(io_service);
+        acceptor.accept(socket);
+
+        asio::ssl::stream<asio::ip::tcp::socket> ssl_socket(io_service, context);
+
+        ssl_socket.handshake(asio::ssl::stream_base::server, error);
+
+        asio::streambuf buffer;
+        asio::read_until(ssl_socket, buffer, "\r\n");
+
+        handle_request(ssl_socket, buffer);
+
+        ssl_socket.shutdown();
+    }
+
+    int main()
+    {
+        try
+        {
+            start_ssl_server();
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Exception: " << e.what() << std::endl;
+        }
+
+        return 0;
+    }
+}
+ */
+
 
 // TODO: https://drive.google.com/file/d/0B1lMPPfEr07IRmFIVGhUOFVTekE/preview?resourcekey=0-gAdn0cm3jM05vZmkIxOqCg
 void Networking::TestAll()
@@ -658,8 +721,9 @@ void Networking::TestAll()
     // UDPEchoServerClient::TestAll();
     // TCPEchoServerClient::TestAll();
 
-    HTTPServer::TestAll();
+    // HTTPServer::TestAll();
 
+    SSL1::runServer();
 
     // SSL2::runServer();
 

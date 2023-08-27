@@ -313,7 +313,7 @@ int main([[maybe_unused]] int argc,
     // ProgramOptions::TestAll(argc, argv);
     // Logging::TestAll();
     // Multithreading::SimpleAsynchTest()
-    // Networking::TestAll();
+    Networking::TestAll();
     // Uuid::TestAll();
     // Serial::TestAll();
     // Spirit::TestAll();
@@ -321,7 +321,7 @@ int main([[maybe_unused]] int argc,
     // Threads::TestAll();
     // Tokenizer::TestAll(argc, argv);
 
-    CircularBuffer::TestAll();
+    // CircularBuffer::TestAll();
 
     /*
     MD5::Test1();
