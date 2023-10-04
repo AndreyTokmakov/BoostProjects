@@ -119,8 +119,8 @@ namespace SSL_TCPServer::SSL1
                                  ssl::context::no_sslv2 |
                                  ssl::context::single_dh_use);
             context.set_password_callback(boost::bind(&server::get_password, this));
-            context.use_certificate_chain_file("../data/server.pem");
-            context.use_private_key_file("../data/key.pem", ssl::context::pem);
+            context.use_certificate_chain_file("/../data/server.pem");
+            context.use_private_key_file("../../data/key.pem", ssl::context::pem);
             // context_.use_tmp_dh_file("dh2048.pem");
 
             start_accept();
@@ -217,8 +217,8 @@ namespace SSL_TCPServer::SSL2
                 return getPassword(max_length, purpose).data();
             });
 
-            context.use_certificate_chain_file("../data/server.pem");
-            context.use_private_key_file("../data/key.pem", ssl::context::pem);
+            context.use_certificate_chain_file("../../data/server.pem");
+            context.use_private_key_file("../../data/key.pem", ssl::context::pem);
             // sslContext.use_tmp_dh_file("dh2048.pem");
 
             // Start listening for incoming connection requests.

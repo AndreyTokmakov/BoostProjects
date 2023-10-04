@@ -1,31 +1,14 @@
-//============================================================================
-// Name        : main.cpp
-// Created on  : 17.08.2021
-// Author      : Tokmakov Andrey
-// Version     : 1.0
-// Copyright   : Your copyright notice
-// Description : C++ Boost Project
-//============================================================================
+/**============================================================================
+Name        : Experiments.cpp
+Created on  : 04.10.2021
+Author      : Andrei Tokmakov
+Version     : 1.0
+Copyright   : Your copyright notice
+Description : Boost Experiments modules tests
+============================================================================**/
 
 #include <iostream>
-#include <memory>
-#include <math.h>
-#include <algorithm>
-
-#include <thread>
-#include <future>
-
 #include <vector>
-#include <algorithm>
-#include <array>
-#include <set>
-#include <string>
-#include <string_view>
-#include <mutex>
-#include <atomic>
-#include <numeric>
-#include <iomanip>
-
 
 #include <boost/version.hpp>
 #include <boost/asio.hpp>
@@ -35,23 +18,6 @@
 #include <boost/algorithm/hex.hpp>
 #include <boost/asio/ssl.hpp>
 #include <boost/tokenizer.hpp>
-
-#include "Buffers/Buffers.h"
-#include "Math/BoostMathTests.h"
-#include "Json/Json.h"
-#include "Spirit/Spirit.h"
-#include "Logging/Logging.h"
-#include "Uuid/Uuid.h"
-#include "Timer/Timer.h"
-#include "Threads/Threads.h"
-#include "DateTime/DateTime.h"
-#include "Serial/Serial.h"
-#include "Networking/Networking.h"
-#include "Tokenizer/Tokenizer.h"
-#include "Communication/Interprocess.h"
-#include "Collections/CircularBuffer.h"
-#include "ProgramOptions/ProgramOptions.h"
-#include "SmartPointers/SmartPointers.h"
 
 
 namespace Utilities {
@@ -302,35 +268,20 @@ namespace Callback
 }
 
 
+
 int main([[maybe_unused]] int argc,
          [[maybe_unused]] char** argv)
 {
-    // BoostMathTests::TestAll();
-    // Buffers::TestAll();
-    // Callback::testCallback();
-    // DateTime::TestAll();
-    // JsonBoost::TestAll();
-    // Interprocess::TestAll(argc, argv);
-    // ProgramOptions::TestAll(argc, argv);
-    // Logging::TestAll();
-    // Multithreading::SimpleAsynchTest()
-    // Networking::TestAll();
-    // Uuid::TestAll();
-    // Serial::TestAll();
-    // Spirit::TestAll();
-    // Timer::TestAll();
-    // Threads::TestAll();
-    // Tokenizer::TestAll(argc, argv);
-    SmartPointers::TestAll();
-    // CircularBuffer::TestAll();
+    const std::vector<std::string_view> args(argv + 1, argv + argc);
 
-    /*
+    // Utilities::PrintBoostVersion();
+
+    // Multithreading::SimpleAsynchTest()
+    // Callback::testCallback();
+
     MD5::Test1();
     MD5::Test2();
     MD5::Test3();
-    */
-
-    // MD5::Test1();
 
     // ThreadPool::Test();
     // ThreadPool::Test2();

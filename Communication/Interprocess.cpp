@@ -63,8 +63,7 @@ namespace Interprocess
 }
 
 
-void Interprocess::TestAll([[maybe_unused]] int argc,
-                           [[maybe_unused]] char** argv)
+void Interprocess::TestAll([[maybe_unused]] const std::vector<std::string_view>& params)
 {
     // Interprocess::create_shared_memory();
     // Interprocess::read_write_shared_memory();

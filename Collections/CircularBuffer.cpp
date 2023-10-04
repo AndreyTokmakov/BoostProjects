@@ -36,3 +36,4 @@ void CircularBuffer::TestAll()
 {
     pushBack_CapacityTest();
 }
+

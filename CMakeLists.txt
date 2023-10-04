@@ -1,63 +1,22 @@
-cmake_minimum_required(VERSION 3.25)
-
+cmake_minimum_required(VERSION 3.21)
 project(BoostProjects)
-add_compile_options(-c -Wall -Werror -Wextra -O3 -std=c++2a)
 
-SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -pthread")
-SET(PROJECT_VERSION 1.0.0.0)
-SET(CMAKE_CXX_STANDARD 20)
-project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 23)
 
-# include_directories(/home/andtokm/DiskS/ProjectsUbuntu/third_party/Eigen/Eigen)
+add_subdirectory(Collections)
+add_subdirectory(Communication)
+add_subdirectory(DateTime)
+add_subdirectory(Json)
+add_subdirectory(Logging)
+add_subdirectory(Math)
+add_subdirectory(Networking)
+add_subdirectory(Experiments)
+add_subdirectory(ProgramOptions)
+add_subdirectory(Serial)
+add_subdirectory(SmartPointers)
+add_subdirectory(Spirit)
+add_subdirectory(Threads)
+add_subdirectory(Timer)
+add_subdirectory(Tokenizer)
+add_subdirectory(Uuid)
 
-if(Boost_VERSION LESS 106500)
-    message(STATUS "Boost version: Boost_VERSION=${Boost_VERSION}")
-    message(FATAL "Required Boost version >= 1.65.0")
-endif()
-message (STATUS "BOOST VERSION: ${Boost_VERSION}")
-
-find_package(OpenSSL REQUIRED)
-
-find_package(Boost REQUIRED COMPONENTS
-        log_setup
-        log
-        filesystem
-        program_options
-        )
-
-
-# include all components
-add_executable(BoostProjects
-        main.cpp
-        Json/Json.cpp
-        # Utilities.cpp
-        # Features.cpp
-        Math/BoostMathTests.cpp Math/BoostMathTests.h
-        Spirit/Spirit.cpp Spirit/Spirit.h
-        ProgramOptions/ProgramOptions.cpp ProgramOptions/ProgramOptions.h
-        Logging/Logging.cpp Logging/Logging.h Uuid/Uuid.cpp Uuid/Uuid.h
-        Timer/Timer.cpp Timer/Timer.h
-        Threads/Threads.cpp Threads/Threads.h
-        DateTime/DateTime.cpp DateTime/DateTime.h
-        Serial/Serial.cpp Serial/Serial.h
-        Networking/Networking.cpp Networking/Networking.h
-        Buffers/Buffers.cpp Buffers/Buffers.h
-        Networking/TCPEchoServerClient.cpp
-        Networking/TCPEchoServerClient.h Networking/UDPEchoServerClient.cpp
-        Networking/UDPEchoServerClient.h
-        Networking/HTTPServer.cpp
-        Networking/HTTPServer.h
-        Tokenizer/Tokenizer.cpp Tokenizer/Tokenizer.h
-        Communication/Interprocess.cpp Communication/Interprocess.h
-        Collections/CircularBuffer.cpp Collections/CircularBuffer.h
-        Networking/SSL_TCPServer.cpp Networking/SSL_TCPServer.h
-        SmartPointers/SmartPointers.h SmartPointers/SmartPointers.cpp
-        )
-
-
-# Link phread library
-TARGET_LINK_LIBRARIES(BoostProjects pthread
-        ${Boost_LIBRARIES}
-        ${OPENSSL_LIBRARIES}
-        boost_timer  -lrt
-)

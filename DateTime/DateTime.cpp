@@ -98,7 +98,7 @@ namespace DateTime
 void DateTime::TestAll()
 {
     // Not_a_DateTime();
-    // Test2();
+    Test2();
 
     // DateFrom_Clock();
     // DateFrom_String();

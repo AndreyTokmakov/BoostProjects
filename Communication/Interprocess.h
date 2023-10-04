@@ -10,10 +10,12 @@ Description : Interprocess
 #ifndef BOOSTPROJECTS_INTERPROCESS_H
 #define BOOSTPROJECTS_INTERPROCESS_H
 
+#include <vector>
+#include <string_view>
+
 namespace Interprocess
 {
-    void TestAll([[maybe_unused]] int argc,
-                 [[maybe_unused]] char** argv);
+    void TestAll(const std::vector<std::string_view>& params);
 };
 
 #endif //BOOSTPROJECTS_INTERPROCESS_H

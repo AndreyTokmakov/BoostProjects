@@ -7,7 +7,7 @@
 // Description : C++ Boost Spirit tests
 //============================================================================
 
-#if 0
+
 
 #include "Spirit.h"
 
@@ -20,6 +20,8 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 
 // https://panthema.net/2018/0912-Boost-Spirit-Tutorial/examples/
+
+#if 0
 
 namespace Spirit::Parsers
 {
@@ -191,7 +193,10 @@ namespace Spirit::Grammar {
     }
 }
 
-void Spirit::TestAll() {
+#endif
+
+void Spirit::TestAll()
+{
     // ParseTest();
 
     // Parsers::test1();
@@ -202,7 +207,6 @@ void Spirit::TestAll() {
 
     // Grammar::test1();
     // Grammar::test2();
-    Grammar::test3();
+    // Grammar::test3();
 }
 
-#endif
