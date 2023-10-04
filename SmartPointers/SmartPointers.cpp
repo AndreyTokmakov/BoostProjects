@@ -37,9 +37,37 @@ namespace SmartPointers::Intrusive_Ref_Counter
     };
     */
 
+
+    void Test()
+    {
+        using List = std::list<boost::intrusive_ptr<Item>>;
+
+        List listOrig;
+        for (auto name : {"one","two","three"}) {
+            listOrig.emplace_back(new Item(name));
+        }
+
+        List list2 (listOrig.begin(), listOrig.end()),
+             list3 (listOrig.begin(), listOrig.end());
+
+        for (const boost::intrusive_ptr<Item>& entry: listOrig){
+            std::cout << entry->data << " (" << entry.get() << ")"
+                      << " | use_count = " << entry->use_count()
+                      << std::endl;
+        }
+
+        std::cout << std::endl;
+
+        for (const boost::intrusive_ptr<Item>& entry: list2) {
+            std::cout << entry->data << " (" << entry.get() << ")"
+                      << " | use_count = " << entry->use_count()
+                      << std::endl;
+        }
+    }
 };
 
 void SmartPointers::TestAll()
 {
+    Intrusive_Ref_Counter::Test();
 
 };
