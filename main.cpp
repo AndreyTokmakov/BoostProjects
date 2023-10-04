@@ -51,6 +51,7 @@
 #include "Communication/Interprocess.h"
 #include "Collections/CircularBuffer.h"
 #include "ProgramOptions/ProgramOptions.h"
+#include "SmartPointers/SmartPointers.h"
 
 
 namespace Utilities {
@@ -313,14 +314,14 @@ int main([[maybe_unused]] int argc,
     // ProgramOptions::TestAll(argc, argv);
     // Logging::TestAll();
     // Multithreading::SimpleAsynchTest()
-    Networking::TestAll();
+    // Networking::TestAll();
     // Uuid::TestAll();
     // Serial::TestAll();
     // Spirit::TestAll();
     // Timer::TestAll();
     // Threads::TestAll();
     // Tokenizer::TestAll(argc, argv);
-
+    SmartPointers::TestAll();
     // CircularBuffer::TestAll();
 
     /*
