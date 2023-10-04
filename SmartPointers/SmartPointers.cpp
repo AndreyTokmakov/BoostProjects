@@ -12,6 +12,7 @@ Description : SmartPointers.cpp
 #include <iostream>
 #include <string_view>
 #include <list>
+#include <memory>
 
 #include <boost/intrusive_ptr.hpp>
 #include <boost/smart_ptr/intrusive_ref_counter.hpp>
@@ -19,12 +20,12 @@ Description : SmartPointers.cpp
 
 namespace SmartPointers::Intrusive_Ref_Counter
 {
-    struct Item : boost::intrusive_ref_counter<Item>
+    struct String : boost::intrusive_ref_counter<String>
     {
         std::string data;
-        explicit Item(std::string data) : data { std::move(data) } {}
+        explicit String(std::string data) : data { std::move(data) } {}
 
-        bool operator<=>(Item const& rhs) const {
+        bool operator<=>(String const& rhs) const {
             return data < rhs.data;
         }
     };
@@ -40,17 +41,18 @@ namespace SmartPointers::Intrusive_Ref_Counter
 
     void Test()
     {
-        using List = std::list<boost::intrusive_ptr<Item>>;
+        using Item = boost::intrusive_ptr<String>;
+        using List = std::list<Item>;
 
         List listOrig;
-        for (auto name : {"one","two","three"}) {
-            listOrig.emplace_back(new Item(name));
-        }
+        for (auto name : { "one", "two", "three" })
+            listOrig.emplace_back(new String(name));
+
 
         List list2 (listOrig.begin(), listOrig.end()),
              list3 (listOrig.begin(), listOrig.end());
 
-        for (const boost::intrusive_ptr<Item>& entry: listOrig){
+        for (const Item& entry: listOrig){
             std::cout << entry->data << " (" << entry.get() << ")"
                       << " | use_count = " << entry->use_count()
                       << std::endl;
@@ -58,7 +60,35 @@ namespace SmartPointers::Intrusive_Ref_Counter
 
         std::cout << std::endl;
 
-        for (const boost::intrusive_ptr<Item>& entry: list2) {
+        for (const Item& entry: list2) {
+            std::cout << entry->data << " (" << entry.get() << ")"
+                      << " | use_count = " << entry->use_count()
+                      << std::endl;
+        }
+    }
+
+    void Test_SharedPtr()
+    {
+        using Item = std::shared_ptr<String>;
+        using List = std::list<Item>;
+
+        List listOrig;
+        for (auto name : { "one", "two", "three" })
+            listOrig.emplace_back(new String(name));
+
+
+        List list2 (listOrig.begin(), listOrig.end()),
+                list3 (listOrig.begin(), listOrig.end());
+
+        for (const Item& entry: listOrig){
+            std::cout << entry->data << " (" << entry.get() << ")"
+                      << " | use_count = " << entry->use_count()
+                      << std::endl;
+        }
+
+        std::cout << std::endl;
+
+        for (const Item& entry: list2) {
             std::cout << entry->data << " (" << entry.get() << ")"
                       << " | use_count = " << entry->use_count()
                       << std::endl;
@@ -69,5 +99,6 @@ namespace SmartPointers::Intrusive_Ref_Counter
 void SmartPointers::TestAll()
 {
     Intrusive_Ref_Counter::Test();
+    Intrusive_Ref_Counter::Test_SharedPtr();
 
 };
