@@ -3,6 +3,7 @@ project(BoostProjects)
 
 set(CMAKE_CXX_STANDARD 23)
 
+add_subdirectory(Asio)
 add_subdirectory(Collections)
 add_subdirectory(Communication)
 add_subdirectory(DateTime)
@@ -19,4 +20,3 @@ add_subdirectory(Threads)
 add_subdirectory(Timer)
 add_subdirectory(Tokenizer)
 add_subdirectory(Uuid)
-
