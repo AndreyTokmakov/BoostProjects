@@ -19,12 +19,12 @@ find_package(Boost REQUIRED COMPONENTS
 find_package(OpenSSL REQUIRED)
 
 # include all components
-add_executable(Asio
+add_executable(${PROJECT_NAME}
         main.cpp
         Experiments.cpp Experiments.h
 )
 
-TARGET_LINK_LIBRARIES(Asio
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}

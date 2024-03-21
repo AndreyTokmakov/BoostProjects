@@ -17,15 +17,15 @@ find_package(Boost REQUIRED COMPONENTS
 )
 
 # include all components
-add_executable(ProgramOptions
+add_executable(${PROJECT_NAME}
         main.cpp
         ProgramOptions.cpp
         ProgramOptions.h
 )
 
-TARGET_LINK_LIBRARIES(ProgramOptions
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}
         boost_timer  -lrt
-        )
+)

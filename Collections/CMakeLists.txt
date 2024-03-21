@@ -17,12 +17,12 @@ find_package(Boost REQUIRED COMPONENTS
 )
 
 # include all components
-add_executable(Collections
+add_executable(${PROJECT_NAME}
         main.cpp
         CircularBuffer.h CircularBuffer.cpp
 )
 
-TARGET_LINK_LIBRARIES(Collections
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}

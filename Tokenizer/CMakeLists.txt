@@ -17,12 +17,12 @@ find_package(Boost REQUIRED COMPONENTS
 )
 
 # include all components
-add_executable(Tokenizer
+add_executable(${PROJECT_NAME}
         main.cpp
         Tokenizer.cpp Tokenizer.h
 )
 
-TARGET_LINK_LIBRARIES(Tokenizer
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}

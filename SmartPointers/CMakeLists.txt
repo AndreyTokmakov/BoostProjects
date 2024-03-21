@@ -17,12 +17,12 @@ find_package(Boost REQUIRED COMPONENTS
 )
 
 # include all components
-add_executable(SmartPointers
+add_executable(${PROJECT_NAME}
         main.cpp
         SmartPointers.cpp SmartPointers.h
 )
 
-TARGET_LINK_LIBRARIES(SmartPointers
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}

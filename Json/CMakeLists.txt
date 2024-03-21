@@ -17,12 +17,12 @@ find_package(Boost REQUIRED COMPONENTS
 )
 
 # include all components
-add_executable(Json
+add_executable(${PROJECT_NAME}
         main.cpp
         Json.h Json.cpp
 )
 
-TARGET_LINK_LIBRARIES(Json
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}

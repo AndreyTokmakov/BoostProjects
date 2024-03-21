@@ -17,12 +17,12 @@ find_package(Boost REQUIRED COMPONENTS
 )
 
 # include all components
-add_executable(DateTime
+add_executable(${PROJECT_NAME}
         main.cpp
         DateTime.cpp DateTime.h
 )
 
-TARGET_LINK_LIBRARIES(DateTime
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}

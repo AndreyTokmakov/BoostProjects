@@ -17,12 +17,12 @@ find_package(Boost REQUIRED COMPONENTS
 )
 
 # include all components
-add_executable(Logging
+add_executable(${PROJECT_NAME}
         main.cpp
         Logging.cpp Logging.h
 )
 
-TARGET_LINK_LIBRARIES(Logging
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}

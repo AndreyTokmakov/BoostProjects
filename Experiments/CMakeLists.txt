@@ -21,11 +21,11 @@ find_package(OpenSSL REQUIRED)
 
 
 # include all components
-add_executable(Experiments
+add_executable(${PROJECT_NAME}
         main.cpp
 )
 
-TARGET_LINK_LIBRARIES(Experiments
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}

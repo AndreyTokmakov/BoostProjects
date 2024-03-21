@@ -17,12 +17,12 @@ find_package(Boost REQUIRED COMPONENTS
 )
 
 # include all components
-add_executable(Math
+add_executable(${PROJECT_NAME}
         main.cpp
         BoostMathTests.h BoostMathTests.cpp
 )
 
-TARGET_LINK_LIBRARIES(Math
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}

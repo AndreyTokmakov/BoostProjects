@@ -17,12 +17,12 @@ find_package(Boost REQUIRED COMPONENTS
 )
 
 # include all components
-add_executable(Uuid
+add_executable(${PROJECT_NAME}
         main.cpp
         Uuid.cpp Uuid.h
 )
 
-TARGET_LINK_LIBRARIES(Uuid
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}

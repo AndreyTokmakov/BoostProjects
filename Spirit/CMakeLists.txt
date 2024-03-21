@@ -17,12 +17,12 @@ find_package(Boost REQUIRED COMPONENTS
 )
 
 # include all components
-add_executable(Spirit
+add_executable(${PROJECT_NAME}
         main.cpp
         Spirit.cpp Spirit.h
 )
 
-TARGET_LINK_LIBRARIES(Spirit
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}

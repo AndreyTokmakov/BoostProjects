@@ -19,7 +19,7 @@ find_package(Boost REQUIRED COMPONENTS
 find_package(OpenSSL REQUIRED)
 
 # include all components
-add_executable(Networking
+add_executable(${PROJECT_NAME}
         main.cpp
         HTTPServer.cpp
         HTTPServer.h
@@ -33,7 +33,7 @@ add_executable(Networking
         UDPEchoServerClient.h
 )
 
-TARGET_LINK_LIBRARIES(Networking
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}

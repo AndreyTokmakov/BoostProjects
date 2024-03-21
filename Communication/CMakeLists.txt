@@ -18,14 +18,14 @@ find_package(Boost REQUIRED COMPONENTS
 )
 
 # include all components
-add_executable(Communication
+add_executable(${PROJECT_NAME}
         main.cpp
         Interprocess.cpp Interprocess.h
 )
 
-TARGET_LINK_LIBRARIES(Communication
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}
         boost_timer  -lrt
-        )
+)

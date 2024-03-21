@@ -20,12 +20,12 @@ find_package(OpenSSL REQUIRED)
 
 
 # include all components
-add_executable(Timer
+add_executable(${PROJECT_NAME}
         main.cpp
         Timer.cpp Timer.h
 )
 
-TARGET_LINK_LIBRARIES(Timer
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}
