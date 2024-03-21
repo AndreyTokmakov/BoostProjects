@@ -1,7 +1,62 @@
 cmake_minimum_required(VERSION 3.21)
 project(BoostProjects)
 
-set(CMAKE_CXX_STANDARD 23)
+set (CMAKE_CXX_STANDARD 23)
+
+# set(BOOST_ROOT        /home/andtokm/DiskS/ProjectsUbuntu/third_party/boost)
+# set(BOOST_INCLUDEDIR  /home/andtokm/DiskS/ProjectsUbuntu/third_party/boost)
+# set(BOOST_LIBRARYDIR  /home/andtokm/DiskS/ProjectsUbuntu/third_party/boost/cmake-build-release-gcc-13/stage/lib)
+# set(Boost_INCLUDE_DIR /home/andtokm/DiskS/ProjectsUbuntu/third_party/boost/output/include)
+# set(Boost_LIBRARY_DIR /home/andtokm/DiskS/ProjectsUbuntu/third_party/boost/cmake-build-release-gcc-13/stage/lib)
+
+# set(Boost_DEBUG ON)
+# set(Boost_VERBOSE ON)
+
+# include_directories(${Boost_INCLUDE_DIRS})
+# link_directories(${Boost_LIBRARY_DIR})
+
+
+
+# https://cmake.org/cmake/help/v3.10/module/FindBoost.html
+
+# Set to ON to disable searching in locations not specified by these hint variables. Default is OFF.
+#   set (Boost_NO_SYSTEM_PATHS ON)
+
+# Set to OFF to use the non-multithreaded libraries ('mt' tag).  Default is ON.
+#   set (Boost_USE_MULTITHREADED ON)
+
+# Set to ON to force the use of the static libraries.  Default is OFF.
+#   set (Boost_USE_STATIC_LIBS ON)
+
+# Set to ON or OFF to specify whether to use libraries linked statically to the C++ runtime ('s' tag).
+# Default is platform dependent.
+#  set (Boost_USE_STATIC_RUNTIME OFF)
+
+
+#  set (BOOST_ALL_DYN_LINK OFF)
+
+find_package(Boost MODULE)
+# find_package(Boost 1.85.0 COMPONENTS ALL)
+# find_package (Boost 1.71.0 MODULE)
+
+message (STATUS "\t\t Boost_VERSION_STRING: ${Boost_VERSION_STRING}")
+message (STATUS "\t\t Boost_VERSION: ${Boost_VERSION}")
+message (STATUS "\t\t Boost_LIBRARIES: ${Boost_LIBRARIES}")
+message (STATUS "\t\t Boost_INCLUDE_DIR: ${Boost_INCLUDE_DIR}")
+message (STATUS "\t\t Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
+message (STATUS "\t\t Boost_LIBRARY_DIR: ${Boost_LIBRARY_DIR}")
+
+find_package(Boost
+        REQUIRED
+        COMPONENTS
+        regex
+        date_time
+        system
+        filesystem
+        thread
+        graph
+        program_options
+)
 
 add_subdirectory(Asio)
 add_subdirectory(Collections)

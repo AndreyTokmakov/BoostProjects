@@ -9,12 +9,6 @@ project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
 add_compile_options(-c -Wall -Werror -Wextra -O3 -std=c++23)
 
-if(Boost_VERSION LESS 106500)
-    message(STATUS "Boost version: Boost_VERSION=${Boost_VERSION}")
-    message(FATAL "Required Boost version >= 1.65.0")
-endif()
-message (STATUS "BOOST VERSION: ${Boost_VERSION}")
-
 find_package(Boost REQUIRED COMPONENTS
         log_setup
         log
@@ -26,11 +20,12 @@ find_package(Boost REQUIRED COMPONENTS
 add_executable(Threads
         main.cpp
         Threads.cpp Threads.h
+        Fibers.cpp Fibers.h
 )
 
 TARGET_LINK_LIBRARIES(Threads
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}
-        boost_timer  -lrt
+        boost_fiber boost_context boost_timer  -lrt
 )
