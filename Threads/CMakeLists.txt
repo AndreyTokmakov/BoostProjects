@@ -17,13 +17,13 @@ find_package(Boost REQUIRED COMPONENTS
 )
 
 # include all components
-add_executable(Threads
+add_executable(${PROJECT_NAME}
         main.cpp
         Threads.cpp Threads.h
         Fibers.cpp Fibers.h
 )
 
-TARGET_LINK_LIBRARIES(Threads
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}
