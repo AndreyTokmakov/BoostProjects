@@ -16,12 +16,13 @@ Description : Experiments.cpp
 #include <boost/thread.hpp>
 #include <boost/algorithm/hex.hpp>
 #include <boost/asio/ssl.hpp>
+#include <boost/asio/spawn.hpp>
 
 #include <boost/array.hpp>
 #include <memory>
 #include <source_location>
 
-namespace Experiments
+namespace
 {
     namespace asio = boost::asio;
     namespace ip = asio::ip;
@@ -29,7 +30,18 @@ namespace Experiments
     namespace system = boost::system;
 
 
-    std::string getCurrentTime() noexcept {
+    [[maybe_unused]]
+    constexpr size_t serverPort = 52525;
+
+    [[maybe_unused]]
+    constexpr std::string_view serverHost { "0.0.0.0" };
+}
+
+
+namespace Experiments
+{
+    std::string getCurrentTime() noexcept
+    {
         const std::chrono::time_point now { std::chrono::system_clock::now() };
         const time_t in_time_t { std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) };
         const std::chrono::duration nowMs = std::chrono::duration_cast<std::chrono::microseconds>(
@@ -50,13 +62,16 @@ namespace Experiments
 
 namespace Experiments
 {
+
     void print(const boost::system::error_code& /*e*/)
     {
         std::cout << getCurrentTime() << ": Hello world!\n";
     }
 
-    struct printer {
-        explicit printer(boost::asio::io_context& io):
+#if 0
+    struct Printer
+    {
+        explicit Printer(boost::asio::io_context& io):
                 timer(io, boost::asio::chrono::seconds(1)), count(0) {
         }
 
@@ -68,11 +83,13 @@ namespace Experiments
                 ++count;
 
                 timer.expires_at(timer.expiry() + boost::asio::chrono::seconds(1));
-                timer.async_wait(boost::bind(&printer::print, this));
+
+                /** CPU 100+ when uncommented **/
+                //timer.async_wait(boost::bind(&Printer::print, this));
             }
         }
 
-        ~printer()
+        ~Printer()
         {
             std::cout << getCurrentTime() << ": Final count is " << count << std::endl;
         }
@@ -81,8 +98,7 @@ namespace Experiments
         boost::asio::steady_timer timer;
         int count;
     };
-
-
+#endif
 
     void connectToServer()
     {
@@ -120,11 +136,12 @@ namespace Experiments
 
     void Timer_Async_With_MemberFunction()
     {
-        asio::io_context ioContext;
-        printer p(ioContext);
-        ioContext.run();
+        // asio::io_context ioContext;
+        // printer p(ioContext);
+        // ioContext.run();
     }
 }
+
 
 namespace Experiments::TcpDaytimeServer
 {
@@ -158,7 +175,8 @@ namespace Experiments::TcpDaytimeServer
 
     void runClient()
     {
-        try {
+        try
+        {
             asio::io_context ioContext;
             tcp::resolver resolver(ioContext);
 
@@ -187,6 +205,107 @@ namespace Experiments::TcpDaytimeServer
     }
 }
 
+
+namespace Coroutines
+{
+    boost::asio::awaitable<void> echo(tcp::socket socket)
+    {
+        std::cout << "echo entered\n";
+        try
+        {
+            char data[1024];
+            while (true)
+            {
+                std::size_t n = co_await socket.async_read_some(boost::asio::buffer(data), boost::asio::use_awaitable);
+                co_await async_write(socket, boost::asio::buffer(data, n), boost::asio::use_awaitable);
+            }
+        }
+        catch (std::exception& e)
+        {
+            std::printf("echo Exception: %s\n", e.what());
+        }
+    }
+
+    void Test()
+    {
+        asio::io_context ioContext;
+        tcp::acceptor acceptor(ioContext, tcp::endpoint(tcp::v4(), serverPort));
+
+        //system::error_code error;
+        while (true)
+        {
+            tcp::socket clientSocket(ioContext);
+            acceptor.accept(clientSocket);
+
+            std::cout << "Client connected" << std::endl;
+
+            boost::asio::co_spawn(ioContext, echo(std::move(clientSocket)), boost::asio::detached);
+        }
+    }
+}
+
+namespace Coroutines2
+{
+    void report_error(std::string_view component, const system::error_code& ec)
+    {
+        std::cerr << component << " failure: "<< ec << " ()" << ec.message() << ")\n";
+    }
+
+    asio::awaitable<void> session(tcp::socket socket)
+    {
+        char data[1024];
+        try {
+            while (true) {
+                const std::size_t bytes = co_await socket.async_read_some(asio::buffer(data),
+                                                                          asio::use_awaitable);
+                std::cout << "session: " << bytes << " bytes read\n";
+                co_await async_write(socket,
+                                     asio::buffer(data, bytes),
+                                     asio::use_awaitable);
+            }
+        } catch (const system::system_error& e) {
+            if (e.code() == asio::error::eof)
+                std::cerr << "Session done \n";
+            else
+                report_error("Session", e.code());
+        }
+    }
+
+    asio::awaitable<void> listener(asio::io_context& context, unsigned short port)
+    {
+        tcp::acceptor acceptor(context, {tcp::v4(), port});
+
+        try {
+            while (true) {
+                tcp::socket socket = co_await acceptor.async_accept(asio::use_awaitable);
+                asio::co_spawn(context, session(std::move(socket)), asio::detached);
+            }
+        } catch (const system::system_error& e) {
+            report_error("Listener", e.code());
+        }
+    }
+
+    void runServer()
+    {
+
+        try {
+            asio::io_context context;
+            asio::signal_set signals(context, SIGINT, SIGTERM);
+            signals.async_wait([&](auto, auto){ context.stop(); });
+
+            auto listen = listener(context, serverPort);
+            asio::co_spawn(context, std::move(listen), asio::detached);
+
+            context.run();
+            std::cerr << "Server done \n";
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Server failure: " << e.what() << "\n";
+        }
+    }
+}
+
 void Experiments::TestAll()
 {
     // connectToServer();
@@ -197,5 +316,9 @@ void Experiments::TestAll()
 
 
     // TcpDaytimeServer::runServer();
-    TcpDaytimeServer::runClient();
+    // TcpDaytimeServer::runClient();
+
+    // Coroutines::Test();
+
+    Coroutines2::runServer();
 }

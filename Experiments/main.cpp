@@ -273,15 +273,14 @@ int main([[maybe_unused]] int argc,
          [[maybe_unused]] char** argv)
 {
     const std::vector<std::string_view> args(argv + 1, argv + argc);
-
-    // Utilities::PrintBoostVersion();
+    Utilities::PrintBoostVersion();
 
     // Multithreading::SimpleAsynchTest()
     // Callback::testCallback();
 
-    MD5::Test1();
-    MD5::Test2();
-    MD5::Test3();
+    // MD5::Test1();
+    // MD5::Test2();
+    // MD5::Test3();
 
     // ThreadPool::Test();
     // ThreadPool::Test2();
