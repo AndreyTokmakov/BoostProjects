@@ -22,6 +22,7 @@ find_package(OpenSSL REQUIRED)
 add_executable(${PROJECT_NAME}
         main.cpp
         Experiments.cpp Experiments.h
+        CoroutineApps.cpp CoroutineApps.h
 )
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}

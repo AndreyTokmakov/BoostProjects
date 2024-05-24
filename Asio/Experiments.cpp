@@ -206,105 +206,6 @@ namespace Experiments::TcpDaytimeServer
 }
 
 
-namespace Coroutines
-{
-    boost::asio::awaitable<void> echo(tcp::socket socket)
-    {
-        std::cout << "echo entered\n";
-        try
-        {
-            char data[1024];
-            while (true)
-            {
-                std::size_t n = co_await socket.async_read_some(boost::asio::buffer(data), boost::asio::use_awaitable);
-                co_await async_write(socket, boost::asio::buffer(data, n), boost::asio::use_awaitable);
-            }
-        }
-        catch (std::exception& e)
-        {
-            std::printf("echo Exception: %s\n", e.what());
-        }
-    }
-
-    void Test()
-    {
-        asio::io_context ioContext;
-        tcp::acceptor acceptor(ioContext, tcp::endpoint(tcp::v4(), serverPort));
-
-        //system::error_code error;
-        while (true)
-        {
-            tcp::socket clientSocket(ioContext);
-            acceptor.accept(clientSocket);
-
-            std::cout << "Client connected" << std::endl;
-
-            boost::asio::co_spawn(ioContext, echo(std::move(clientSocket)), boost::asio::detached);
-        }
-    }
-}
-
-namespace Coroutines2
-{
-    void report_error(std::string_view component, const system::error_code& ec)
-    {
-        std::cerr << component << " failure: "<< ec << " ()" << ec.message() << ")\n";
-    }
-
-    asio::awaitable<void> session(tcp::socket socket)
-    {
-        char data[1024];
-        try {
-            while (true) {
-                const std::size_t bytes = co_await socket.async_read_some(asio::buffer(data),
-                                                                          asio::use_awaitable);
-                std::cout << "session: " << bytes << " bytes read\n";
-                co_await async_write(socket,
-                                     asio::buffer(data, bytes),
-                                     asio::use_awaitable);
-            }
-        } catch (const system::system_error& e) {
-            if (e.code() == asio::error::eof)
-                std::cerr << "Session done \n";
-            else
-                report_error("Session", e.code());
-        }
-    }
-
-    asio::awaitable<void> listener(asio::io_context& context, unsigned short port)
-    {
-        tcp::acceptor acceptor(context, {tcp::v4(), port});
-
-        try {
-            while (true) {
-                tcp::socket socket = co_await acceptor.async_accept(asio::use_awaitable);
-                asio::co_spawn(context, session(std::move(socket)), asio::detached);
-            }
-        } catch (const system::system_error& e) {
-            report_error("Listener", e.code());
-        }
-    }
-
-    void runServer()
-    {
-
-        try {
-            asio::io_context context;
-            asio::signal_set signals(context, SIGINT, SIGTERM);
-            signals.async_wait([&](auto, auto){ context.stop(); });
-
-            auto listen = listener(context, serverPort);
-            asio::co_spawn(context, std::move(listen), asio::detached);
-
-            context.run();
-            std::cerr << "Server done \n";
-        }
-        catch (std::exception& e)
-        {
-            std::cerr << "Server failure: " << e.what() << "\n";
-        }
-    }
-}
 
 void Experiments::TestAll()
 {
@@ -318,7 +219,4 @@ void Experiments::TestAll()
     // TcpDaytimeServer::runServer();
     // TcpDaytimeServer::runClient();
 
-    // Coroutines::Test();
-
-    Coroutines2::runServer();
 }
