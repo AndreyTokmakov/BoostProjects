@@ -18,6 +18,7 @@ Description : Boost Experiments modules tests
 #include <boost/algorithm/hex.hpp>
 #include <boost/asio/ssl.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/noncopyable.hpp>
 
 
 namespace Utilities {

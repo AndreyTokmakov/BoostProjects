@@ -258,7 +258,7 @@ void CoroutineApps::TestAll()
 {
     // AcceptServer::Test();
 
-    // EchoServer_One::runServer();
+    EchoServer_One::runServer();
     // EchoServer_Refactor::runServer();
-    EchoServer_Single::runServer();
+    // EchoServer_Single::runServer();
 }
