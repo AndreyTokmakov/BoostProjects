@@ -1,17 +1,32 @@
 cmake_minimum_required(VERSION 3.21)
 project(BoostProjects)
 
+include(FetchContent)
 set(CMAKE_CXX_STANDARD 23)
-set(THIRD_PARTY_LIBS_DIR /home/andtokm/DiskS/ProjectsUbuntu/third_party)
+
+message(STATUS "[dependency] fetching boost")
+set(BOOST_ENABLE_PYTHON OFF)
+set(BOOST_IOSTREAMS_ENABLE_ZLIB ON)
+FetchContent_Declare(boost
+        GIT_REPOSITORY https://github.com/boostorg/boost.git
+        GIT_TAG boost-1.85.0
+        GIT_SHALLOW ON
+        GIT_PROGRESS ON
+        CMAKE_ARGS  -DBOOST_IOSTREAMS_ENABLE_ZLIB=ON
+)
+FetchContent_MakeAvailable(boost)
+
+
+#[=[
+set(THIRD_PARTY_LIBS_DIR /home/andtokm/Projects/third_party)
 
 set(BOOST_DIR ${THIRD_PARTY_LIBS_DIR}/boost)
 set(BOOST_DIR_1_85 ${THIRD_PARTY_LIBS_DIR}/boost_1_85)
 set(BOOST_DIR_1_85_CLANG ${THIRD_PARTY_LIBS_DIR}/boost_1_85_clang)
 
-# set(BOOST_ROOT_DIR ${BOOST_DIR})
-set(BOOST_ROOT_DIR ${BOOST_DIR_1_85})
+set(BOOST_ROOT_DIR ${BOOST_DIR})
+# set(BOOST_ROOT_DIR ${BOOST_DIR_1_85})
 set(BOOST_LIBS_DIR ${BOOST_ROOT_DIR}/stage/lib)
-
 
 set(BOOST_ROOT         ${BOOST_ROOT_DIR})
 set(BOOST_INCLUDEDIR   ${BOOST_ROOT_DIR})
@@ -25,8 +40,6 @@ set(BOOST_LIBRARY_DIRS ${BOOST_LIBS_DIR})
 include_directories(${BOOST_ROOT_DIR})
 include_directories(${BOOST_INCLUDE_DIRS})
 link_directories(${BOOST_LIBRARY_DIR})
-
-
 
 # set(Bost_DEBUG ON)
 # set(Boost_VERBOSE ON)
@@ -53,6 +66,8 @@ set (Boost_USE_STATIC_RUNTIME OFF)
 # find_package(Boost 1.86.0 COMPONENTS ALL)
 # find_package(Boost 1.86.0 MODULE)
 # find_package(Boost 1.71.0 MODULE)
+#]=]
+
 
 #[=[
 message (STATUS "\t\t Boost_VERSION_STRING: ${Boost_VERSION_STRING}")
