@@ -30,7 +30,8 @@ namespace logging = boost::log;
 
 namespace BasicExamples
 {
-    void SimpleTests() {
+    void SimpleTests()
+    {
         // Trivial logging: all log records are written into a file
         BOOST_LOG_TRIVIAL(trace) << "A trace severity message";
         BOOST_LOG_TRIVIAL(debug) << "A debug severity message";

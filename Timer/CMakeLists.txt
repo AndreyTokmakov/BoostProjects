@@ -9,6 +9,7 @@ project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
 add_compile_options(-c -Wall -Werror -Wextra -O3 -std=c++23)
 
+#[=[
 cmake_policy(SET CMP0144 OLD)
 find_package(Boost REQUIRED COMPONENTS
         log_setup
@@ -16,6 +17,7 @@ find_package(Boost REQUIRED COMPONENTS
         filesystem
         program_options
 )
+#]=]
 
 find_package(OpenSSL REQUIRED)
 
@@ -28,7 +30,6 @@ add_executable(${PROJECT_NAME}
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
-        ${Boost_LIBRARIES}
         ${OPENSSL_LIBRARIES}
-        boost_timer  -lrt
+        boost_timer
 )

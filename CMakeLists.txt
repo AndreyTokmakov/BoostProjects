@@ -68,15 +68,18 @@ set (Boost_USE_STATIC_RUNTIME OFF)
 # find_package(Boost 1.71.0 MODULE)
 #]=]
 
+set (Boost_NO_SYSTEM_PATHS ON)
 
-#[=[
+# find_package(Boost 1.86.0 COMPONENTS ALL)
+
+
 message (STATUS "\t\t Boost_VERSION_STRING: ${Boost_VERSION_STRING}")
 message (STATUS "\t\t Boost_VERSION: ${Boost_VERSION}")
 message (STATUS "\t\t Boost_LIBRARIES: ${Boost_LIBRARIES}")
 message (STATUS "\t\t Boost_INCLUDE_DIR: ${Boost_INCLUDE_DIR}")
 message (STATUS "\t\t Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
 message (STATUS "\t\t Boost_LIBRARY_DIR: ${Boost_LIBRARY_DIR}")
-#]=]
+
 
 add_subdirectory(Asio)
 add_subdirectory(Collections)
