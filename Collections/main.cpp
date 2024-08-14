@@ -12,13 +12,15 @@ Description : Tests C++ project
 #include <string_view>
 
 #include "CircularBuffer.h"
+#include "FlatMap.h"
 
 int main([[maybe_unused]] int argc,
          [[maybe_unused]] char** argv)
 {
     const std::vector<std::string_view> args(argv + 1, argv + argc);
 
-    CircularBuffer::TestAll();
+    // CircularBuffer::TestAll();
+    FlatMap::TestAll();
 
     return EXIT_SUCCESS;
 }

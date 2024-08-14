@@ -23,6 +23,7 @@ find_package(Boost REQUIRED COMPONENTS
 add_executable(${PROJECT_NAME}
         main.cpp
         CircularBuffer.h CircularBuffer.cpp
+        FlatMap.h FlatMap.cpp
 )
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
