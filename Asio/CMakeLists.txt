@@ -30,7 +30,7 @@ add_executable(${PROJECT_NAME}
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
-        ${Boost_LIBRARIES}
+        Boost::asio
         ${OPENSSL_LIBRARIES}
         boost_timer
         -lrt

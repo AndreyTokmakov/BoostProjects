@@ -486,7 +486,6 @@ namespace Networking::Beast::Client
         http::response<http::dynamic_body> res;    // Declare a container to hold the response
         http::read(stream, buffer, res);  // Receive the HTTP response
 
-        std::cout << res. << std::endl;
         std::cout << res << std::endl;
 
         beast::error_code ec;

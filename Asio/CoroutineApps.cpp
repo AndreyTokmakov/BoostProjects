@@ -17,10 +17,11 @@ Description : CoroutineApps.cpp
 #include <boost/algorithm/hex.hpp>
 #include <boost/asio/ssl.hpp>
 #include <boost/asio/spawn.hpp>
-#include <boost/asio/experimental/as_single.hpp>
+// #include <boost/asio/experimental/as_single.hpp>
 
 #include <boost/array.hpp>
 #include <memory>
+#include <thread>
 #include <source_location>
 
 namespace
@@ -198,10 +199,11 @@ namespace CoroutineApps::EchoServer_Refactor
     }
 }
 
+#if 0
 namespace CoroutineApps::EchoServer_Single
 {
     namespace coroutines = asio::this_coro;
-    using asio::experimental::as_single_t;
+    //using asio::experimental::as_single_t;
     using asio::use_awaitable_t;
     using default_token = as_single_t<use_awaitable_t<>>;
     using tcp_acceptor = default_token::as_default_on_t<tcp::acceptor>;
@@ -251,6 +253,7 @@ namespace CoroutineApps::EchoServer_Single
         }
     }
 }
+#endif
 
 
 
@@ -258,7 +261,16 @@ void CoroutineApps::TestAll()
 {
     // AcceptServer::Test();
 
-    EchoServer_One::runServer();
+    // EchoServer_One::runServer();
     // EchoServer_Refactor::runServer();
     // EchoServer_Single::runServer();
+
+    const uint32_t concurrency = std::thread::hardware_concurrency();
+    asio::io_context service(concurrency);
+
+    std::vector<std::jthread> workers;
+
+    for (auto i = 0u; i < concurrency; ++i) {
+        workers.emplace_back(static_cast<std::size_t(asio::io_context::*)()>(&asio::io_context::run), &service);
+    }
 }

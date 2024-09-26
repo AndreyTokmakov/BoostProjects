@@ -9,7 +9,7 @@ set(BOOST_ENABLE_PYTHON OFF)
 set(BOOST_IOSTREAMS_ENABLE_ZLIB ON)
 FetchContent_Declare(boost
         GIT_REPOSITORY https://github.com/boostorg/boost.git
-        GIT_TAG boost-1.85.0
+        GIT_TAG boost-1.86.0
         GIT_SHALLOW ON
         GIT_PROGRESS ON
         CMAKE_ARGS  -DBOOST_IOSTREAMS_ENABLE_ZLIB=ON
