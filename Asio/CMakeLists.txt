@@ -9,7 +9,7 @@ project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
 add_compile_options(-c -Wall -Werror -Wextra -O3 -std=c++23)
 
-find_package(OpenSSL REQUIRED)
+# find_package(OpenSSL REQUIRED)
 
 # include all components
 add_executable(${PROJECT_NAME}
@@ -21,5 +21,5 @@ add_executable(${PROJECT_NAME}
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         Boost::asio
-        ${OPENSSL_LIBRARIES}
+        OpenSSL::Crypto
 )

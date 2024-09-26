@@ -16,6 +16,15 @@ FetchContent_Declare(boost
 )
 FetchContent_MakeAvailable(boost)
 
+message(STATUS "[dependency] fetching OpenSSL")
+FetchContent_Declare(OpenSSL
+        GIT_REPOSITORY https://github.com/openssl/openssl.git
+        GIT_TAG        openssl-3.3.2
+        GIT_SHALLOW ON
+        GIT_PROGRESS ON
+)
+FetchContent_MakeAvailable(OpenSSL)
+
 
 #[=[
 set(THIRD_PARTY_LIBS_DIR /home/andtokm/Projects/third_party)
