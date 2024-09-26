@@ -9,16 +9,6 @@ project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
 add_compile_options(-c -Wall -Werror -Wextra -O3 -std=c++23)
 
-#[=[
-cmake_policy(SET CMP0144 OLD)
-find_package(Boost REQUIRED COMPONENTS
-        # program_describe
-)
-#]=]
-
-# add_library(boost_describe INTERFACE)
-# add_library(Boost::describe ALIAS boost_describe)
-
 # include all components
 add_executable(${PROJECT_NAME}
         main.cpp

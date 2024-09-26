@@ -9,17 +9,6 @@ project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
 add_compile_options(-c -Wall -Werror -Wextra -O3 -BOOST_LOG_DYN_LINK -std=c++23)
 
-
-#[=[
-cmake_policy(SET CMP0144 OLD)
-find_package(Boost REQUIRED COMPONENTS
-        log_setup
-        log
-        filesystem
-        program_options
-)
-#]=]
-
 # include all components
 add_executable(${PROJECT_NAME}
         main.cpp
@@ -30,8 +19,7 @@ add_definitions(-DBOOST_LOG_DYN_LINK)
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
-        boost_log
-        boost_log_setup
-        boost_system
-        # boost_log_with_support
+        Boost::log
+        Boost::log_setup
+        Boost::log_with_support
 )
