@@ -22,6 +22,7 @@ FetchContent_Declare(OpenSSL
         GIT_TAG        openssl-3.3.2
         GIT_SHALLOW ON
         GIT_PROGRESS ON
+        BUILD_COMMAND make
 )
 FetchContent_MakeAvailable(OpenSSL)
 

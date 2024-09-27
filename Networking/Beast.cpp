@@ -36,7 +36,8 @@ Description : Beast.cpp
 namespace asio = boost::asio;
 using namespace std::string_view_literals;
 
-namespace Beast::Client
+
+namespace Beast
 {
     namespace beast = boost::beast;
     namespace http = beast::http;
@@ -45,8 +46,11 @@ namespace Beast::Client
     namespace json = boost::json;
     namespace ip = boost::asio::ip;
     using tcp = net::ip::tcp;
+}
 
 
+namespace Beast::Client
+{
     void SimpleHttpGetRequest()
     {
         constexpr std::string_view host { "0.0.0.0"}, port { "52525"};
@@ -98,7 +102,7 @@ namespace Beast::Client
             return true; // Accept any certificate
         });
         // Enable SNI
-        if(!SSL_set_tlsext_host_name(stream.native_handle(), host.c_str())) {
+        if (!SSL_set_tlsext_host_name(stream.native_handle(), host.c_str())){
             beast::error_code ec{static_cast<int>(::ERR_get_error()), net::error::get_ssl_category()};
             throw beast::system_error{ec};
         }
@@ -142,13 +146,123 @@ namespace Beast::Client
             throw beast::system_error{ec};
         }
     }
-
 }
 
+namespace  Beast::HTTP_Methods
+{
+    void do_get(beast::tcp_stream & stream,
+                http::request<http::string_body> & request,
+                beast::flat_buffer buffer,
+                http::response<http::dynamic_body> & res)
+    {
+        request.target("/get");
+        request.method(beast::http::verb::get);
+        http::write(stream, request);
+        http::read(stream, buffer, res);
+    }
 
+    void do_head(beast::tcp_stream & stream,
+                http::request<http::string_body> & request,
+                beast::flat_buffer buffer,
+                http::response<http::dynamic_body> & res)
+    {
+        // we reuse the get endpoint
+        request.target("/get");
+        request.method(beast::http::verb::head);
+        http::write(stream, request);
+        http::response_parser<http::dynamic_body> p;
+        http::read_header(stream, buffer, p);
+        res = p.release();
+    }
+
+    void do_patch(beast::tcp_stream & stream,
+                  http::request<http::string_body> & request,
+                  beast::flat_buffer buffer,
+                  http::response<http::dynamic_body> & res)
+    {
+        request.target("/patch");
+        request.method(beast::http::verb::patch);
+        request.body() = "Some random patch data";
+        request.prepare_payload(); // set content-length based on the body
+        http::write(stream, request);
+        http::read(stream, buffer, res);
+    }
+
+    void do_put(beast::tcp_stream & stream,
+                http::request<http::string_body> & request,
+                beast::flat_buffer buffer,
+                http::response<http::dynamic_body> & res)
+    {
+        request.target("/put");
+        request.method(beast::http::verb::put);
+        request.body() = "Some random put data";
+        request.prepare_payload(); // set content-length based on the body
+        http::write(stream, request);
+        http::read(stream, buffer, res);
+    }
+
+    void do_post(beast::tcp_stream & stream,
+                 http::request<http::string_body> & request,
+                 beast::flat_buffer buffer,
+                 http::response<http::dynamic_body> & res)
+    {
+        request.target("/post");
+        request.method(beast::http::verb::post);
+        request.body() = "Some random post data";
+        request.prepare_payload(); // set content-length based on the body
+        http::write(stream, request);
+        http::read(stream, buffer, res);
+    }
+
+    void do_delete(beast::tcp_stream & stream,
+                   http::request<http::string_body> & request,
+                   beast::flat_buffer buffer,
+                   http::response<http::dynamic_body> & res)
+    {
+        request.target("/delete");
+        request.method(beast::http::verb::delete_);
+        // NOTE: delete doesn't require a body
+        request.body() = "Some random delete data";
+        request.prepare_payload(); // set content-length based on the body
+        http::write(stream, request);
+        http::read(stream, buffer, res);
+    }
+
+    void Test()
+    {
+        constexpr std::string_view host { "0.0.0.0"}, port { "52525"};
+        // constexpr std::string_view path { "/index" };
+        // constexpr int version { 11 };
+
+        net::io_context ioCtx;
+        tcp::resolver resolver(ioCtx);
+        beast::tcp_stream stream(ioCtx);
+
+        tcp::resolver::results_type serverEndpoint = resolver.resolve(host, port);
+
+        stream.connect(serverEndpoint);
+
+        // Set up an HTTP GET request message
+        http::request<http::string_body> request;
+        request.set(http::field::host, "httpbin.cpp.al");
+        request.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+
+        beast::flat_buffer buffer;
+        http::response<http::dynamic_body> response;
+
+        // do_get(stream, request, buffer, response);
+        // do_head(stream, request, buffer, response);
+        // do_patch(stream, request, buffer, response);
+        // do_put(stream, request, buffer, response);
+        // do_post(stream, request, buffer, response);
+        do_delete(stream, request, buffer, response);
+    }
+
+}
 
 void Beast::TestAll([[maybe_unused]] const std::vector<std::string_view>& params)
 {
     // Client::SimpleHttpGetRequest();
-    Client::SSL_Request_Test();
+    // Client::SSL_Request_Test();
+    HTTP_Methods::Test();
 }
