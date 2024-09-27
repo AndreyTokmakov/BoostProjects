@@ -21,5 +21,5 @@ add_executable(${PROJECT_NAME}
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         Boost::asio
-        OpenSSL::Crypto
+        # OpenSSL::Crypto
 )

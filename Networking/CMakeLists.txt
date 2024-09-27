@@ -15,20 +15,17 @@ find_package(OpenSSL REQUIRED)
 add_executable(${PROJECT_NAME}
         main.cpp
         HTTPServer.cpp
-        HTTPServer.h
         Networking.cpp
-        Networking.h
+        Beast.cpp
         SSL_TCPServer.cpp
-        SSL_TCPServer.h
         TCPEchoServerClient.cpp
-        TCPEchoServerClient.h
         UDPEchoServerClient.cpp
-        UDPEchoServerClient.h
 )
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
         Boost::asio
         Boost::beast
+        Boost::json
         ${OPENSSL_LIBRARIES}
 )

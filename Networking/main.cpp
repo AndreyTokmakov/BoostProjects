@@ -11,13 +11,15 @@ Description : Boost Communication modules tests
 #include <vector>
 
 #include "Networking.h"
+#include "Beast.h"
 
 int main([[maybe_unused]] int argc,
          [[maybe_unused]] char** argv)
 {
-    const std::vector<std::string_view> args(argv + 1, argv + argc);
+    const std::vector<std::string_view> params(argv + 1, argv + argc);
 
     Networking::TestAll();
+    Beast::TestAll(params);
 
     return EXIT_SUCCESS;
 }

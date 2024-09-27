@@ -448,56 +448,11 @@ namespace SSL3
         return 0;
     }
 }
- */
-
-
-namespace Networking::Beast::Client
-{
-    namespace beast = boost::beast;     // from <boost/beast.hpp>
-    namespace http = beast::http;       // from <boost/beast/http.hpp>
-    namespace net = boost::asio;        // from <boost/asio.hpp>
-    using tcp = net::ip::tcp;           // from <boost/asio/ip/tcp.hpp>
-
-
-    void SimpleHttpGetRequest()
-    {
-        constexpr std::string_view host { "0.0.0.0"}, port { "8080"};
-        constexpr std::string_view path { "/index" };
-        constexpr int version { 11 };
-
-        net::io_context ioCtx;
-        tcp::resolver resolver(ioCtx);
-        beast::tcp_stream stream(ioCtx);
-
-        tcp::resolver::results_type serverEndpoint = resolver.resolve(host, port);
-
-        // Make the connection on the IP address we get from a lookup
-        stream.connect(serverEndpoint);
-
-        // Set up an HTTP GET request message
-        http::request<http::string_body> req { http::verb::get, path.data(), version };
-        req.set(http::field::host, host);
-        req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
-
-        // Send the HTTP request to the remote host
-        http::write(stream, req);
-        beast::flat_buffer buffer;
-
-        http::response<http::dynamic_body> res;    // Declare a container to hold the response
-        http::read(stream, buffer, res);  // Receive the HTTP response
-
-        std::cout << res << std::endl;
-
-        beast::error_code ec;
-        stream.socket().shutdown(tcp::socket::shutdown_both, ec);
-    }
-}
-
+*/
 
 // TODO: https://drive.google.com/file/d/0B1lMPPfEr07IRmFIVGhUOFVTekE/preview?resourcekey=0-gAdn0cm3jM05vZmkIxOqCg
 void Networking::TestAll()
 {
-
     // Basics::createAcceptorSocket();
     // Basics::acceptConnections();
     // Basics::resolveDNS();
@@ -512,9 +467,6 @@ void Networking::TestAll()
 
     // Networking::HTTP::sendRequestGET();
 
-    Beast::Client::SimpleHttpGetRequest();
-
-
     // UDPEchoServerClient::TestAll();
     // TCPEchoServerClient::TestAll();
 
@@ -525,7 +477,6 @@ void Networking::TestAll()
     /*
     constexpr std::string_view raw_ip_address { "0.0.0.0" };
     constexpr uint16_t port_num = 10525;
-
     asio::ip::tcp::endpoint ep(asio::ip::address::from_string(raw_ip_address.data()), port_num);
     */
 };
