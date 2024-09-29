@@ -23,6 +23,10 @@ Description : Beast.cpp
 #include <boost/beast/version.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
+#include <boost/beast/version.hpp>
+#include <boost/asio/spawn.hpp>
 
 #include <boost/json.hpp>
 
@@ -351,7 +355,8 @@ namespace Beast::HTTP_Client_Async
                 return fail(ec, "shutdown");
         }
 
-        void fail(beast::error_code ec, char const* what) {
+        static void fail(const beast::error_code& ec,
+                         const std::string_view what) {
             std::cerr << what << ": " << ec.message() << "\n";
         }
     };
@@ -371,7 +376,187 @@ namespace Beast::HTTP_Client_Async
         // Run the I/O service. The call will return when the get operation is complete.
         ioc.run();
     }
+}
 
+
+namespace Beast::Coroutine_HTTP_Client
+{
+    static void fail(const beast::error_code& ec,
+                     const std::string_view what) {
+        std::cerr << what << ": " << ec.message() << "\n";
+    }
+
+    void do_session(const std::string& host,
+                    const std::string& port,
+                    const std::string& target,
+                    int version,
+                    net::io_context& ioc,
+                    const net::yield_context& yield)
+    {
+        beast::error_code ec;
+
+        // These objects perform our I/O
+        tcp::resolver resolver(ioc);
+        beast::tcp_stream stream(ioc);
+
+        // Look up the domain name
+        tcp::resolver::results_type serverEndpoint = resolver.async_resolve(host, port, yield[ec]);
+        if (ec)
+            return fail(ec, "resolve");
+
+        // Set the timeout.
+        stream.expires_after(std::chrono::seconds(30));
+
+        // Make the connection on the IP address we get from a lookup
+        stream.async_connect(serverEndpoint, yield[ec]);
+        if (ec)
+            return fail(ec, "connect");
+
+        // Set up an HTTP GET request message
+        http::request<http::string_body> request{http::verb::get, target, version};
+        request.set(http::field::host, host);
+        request.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+
+        // Set the timeout.
+        stream.expires_after(std::chrono::seconds(30));
+
+        // Send the HTTP request to the remote host
+        http::async_write(stream, request, yield[ec]);
+        if (ec)
+            return fail(ec, "write");
+
+        // This buffer is used for reading and must be persisted
+        beast::flat_buffer buffer;
+
+        // Declare a container to hold the response
+        http::response<http::dynamic_body> response;
+
+        // Receive the HTTP response
+        http::async_read(stream, buffer, response, yield[ec]);
+        if (ec)
+            return fail(ec, "read");
+
+        // Write the message to standard out
+        std::cout << response << std::endl;
+
+        // Gracefully close the socket
+        stream.socket().shutdown(tcp::socket::shutdown_both, ec);
+
+        // not_connected happens sometimes so don't bother reporting it.
+        if (ec && ec != beast::errc::not_connected)
+            return fail(ec, "shutdown");
+
+        // If we get here then the connection is closed gracefully
+    }
+
+    void runClient()
+    {
+        const std::string host { "0.0.0.0"}, port { "52525"}, path { "/index" };
+        constexpr int version { 11 };
+
+        // The io_context is required for all I/O
+        net::io_context ioCtx;
+
+        // Launch the asynchronous operation
+        boost::asio::spawn(ioCtx, std::bind(&do_session,
+                                             host, port, path, version,
+                                             std::ref(ioCtx),
+                                             std::placeholders::_1),
+                // on completion, spawn will call this function
+               [](const std::exception_ptr& ex)
+               {
+                   // if an exception occurred in the coroutine,it's something critical, e.g. out of memory
+                   // we capture normal errors in the ec so we just rethrow the exception here,
+                   // which will cause `ioc.run()` to throw
+                   if (ex)
+                       std::rethrow_exception(ex);
+               });
+
+        // Run the I/O service. The call will return when the get operation is complete.
+        ioCtx.run();
+    }
+}
+
+namespace Beast::Awaitable_Client
+{
+    net::awaitable<void> do_session(std::string host,
+                                    std::string port,
+                                    std::string target,
+                                    int version)
+    {
+        auto executor = co_await net::this_coro::executor;
+        auto resolver = net::ip::tcp::resolver{ executor };
+        auto stream   = beast::tcp_stream{ executor };
+
+        // Look up the domain name
+        tcp::resolver::results_type serverEndpoint = co_await resolver.async_resolve(host, port);
+
+        // Set the timeout.
+        stream.expires_after(std::chrono::seconds(30));
+
+        // Make the connection on the IP address we get from a lookup
+        co_await stream.async_connect(serverEndpoint);
+
+        // Set up an HTTP GET request message
+        http::request<http::string_body> req{ http::verb::get, target, version };
+        req.set(http::field::host, host);
+        req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+
+        // Set the timeout.
+        stream.expires_after(std::chrono::seconds(30));
+
+        // Send the HTTP request to the remote host
+        co_await http::async_write(stream, req);
+
+        // This buffer is used for reading and must be persisted
+        beast::flat_buffer buffer;
+
+        // Declare a container to hold the response
+        http::response<http::dynamic_body> res;
+
+        // Receive the HTTP response
+        co_await http::async_read(stream, buffer, res);
+
+        // Write the message to standard out
+        std::cout << res << std::endl;
+
+        // Gracefully close the socket
+        beast::error_code ec;
+        stream.socket().shutdown(net::ip::tcp::socket::shutdown_both, ec);
+
+        // not_connected happens sometimes so don't bother reporting it.
+        if(ec && ec != beast::errc::not_connected)
+            throw boost::system::system_error(ec, "shutdown");
+        // If we get here then the connection is closed gracefully
+    }
+
+    void sendRequest()
+    {
+        const std::string host { "0.0.0.0"}, port { "52525"}, path { "/index1" };
+        constexpr int version { 11 };
+
+        try
+        {
+            // The io_context is required for all I/O
+            net::io_context ioCtx;
+
+            // Launch the asynchronous operation
+            net::co_spawn(ioCtx, do_session(host, port, path, version),
+                // If the awaitable exists with an exception, it gets delivered here
+                // as `e`. This can happen for regular errors, such as connection drops.
+                [](const std::exception_ptr& e) {
+                    if(e)
+                        std::rethrow_exception(e);
+                });
+
+            // Run the I/O service. The call will return when the get operation is complete.
+            ioCtx.run();
+        }
+        catch(std::exception const& e)
+        {
+            std::cerr << "Error: " << e.what() << std::endl;
+        }
+    }
 }
 
 void Beast::TestAll([[maybe_unused]] const std::vector<std::string_view>& params)
@@ -380,5 +565,9 @@ void Beast::TestAll([[maybe_unused]] const std::vector<std::string_view>& params
     // Client::SSL_Request_Test();
     // HTTP_Methods::Test();
 
-    HTTP_Client_Async::Send_Request();
+    // HTTP_Client_Async::Send_Request();
+
+    // Coroutine_HTTP_Client::runClient();
+
+    Awaitable_Client::sendRequest();
 }
