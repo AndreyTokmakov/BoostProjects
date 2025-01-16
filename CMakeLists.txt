@@ -4,6 +4,14 @@ project(BoostProjects)
 include(FetchContent)
 set(CMAKE_CXX_STANDARD 26)
 
+# 5.15 - My home Ubuntu-20.04
+if (CMAKE_SYSTEM_VERSION MATCHES "5.15")
+    set(THIRD_PARTY_DIR /home/andtokm/DiskS/ProjectsUbuntu/third_party)
+    set(EXTRA_LIBS tbb)
+else()
+    set(THIRD_PARTY_DIR /home/andtokm/Projects/third_party)
+endif()
+
 message(STATUS "[dependency] fetching boost")
 set(BOOST_ENABLE_PYTHON OFF)
 set(BOOST_IOSTREAMS_ENABLE_ZLIB ON)

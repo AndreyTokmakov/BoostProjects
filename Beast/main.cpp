@@ -11,6 +11,9 @@ Description : Boost Beast modules tests
 #include <vector>
 
 #include "Client.h"
+#include "HTTPServer.h"
+#include "WebSocketServers.h"
+#include "WebSocketClients.h"
 
 
 int main([[maybe_unused]] int argc,
@@ -18,7 +21,10 @@ int main([[maybe_unused]] int argc,
 {
     const std::vector<std::string_view> args(argv + 1, argv + argc);
 
-    Client::TestAll();
+    // Client::TestAll();
+    // HTTPServer::TestAll();
+    WebSocketServers::TestAll();
+    // WebSocketClients::TestAll();
 
 
     return EXIT_SUCCESS;

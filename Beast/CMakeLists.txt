@@ -12,8 +12,18 @@ add_compile_options(-c -Wall -Werror -Wextra -O3 -std=c++26)
 # include all components
 add_executable(${PROJECT_NAME}
         main.cpp
-        Client.cpp
+        http/Client.cpp
+        http/HTTPServer.cpp
+        web_sockets/WebSocketServers.cpp
+        web_sockets/WebSocketClients.cpp
 )
+
+link_directories(${THIRD_PARTY_DIR}/openssl)
+include_directories(${THIRD_PARTY_DIR}/openssl/include)
+
+
+include_directories("http")
+include_directories("web_sockets")
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread
@@ -21,4 +31,5 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         Boost::beast
         Boost::json
         crypto
+        ssl
 )

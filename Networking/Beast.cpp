@@ -113,7 +113,7 @@ namespace Beast::Client
         // Connect to the HTTPS server
         ip::tcp::resolver resolver(ioc);
         get_lowest_layer(stream).connect(resolver.resolve({host, "https"}));
-        get_lowest_layer(stream).expires_after(std::chrono::seconds(30));
+        get_lowest_layer(stream).expires_after(std::chrono::seconds(30u));
 
         // Construct request
         http::request<http::empty_body> req{http::verb::get, "/?format=json" , 11};
@@ -304,7 +304,7 @@ namespace Beast::HTTP_Client_Async
                 return fail(ec, "resolve");
 
             // Set a timeout on the operation
-            stream.expires_after(std::chrono::seconds(30));
+            stream.expires_after(std::chrono::seconds(30u));
 
             // Make the connection on the IP address we get from a lookup
             stream.async_connect(results,
@@ -318,7 +318,7 @@ namespace Beast::HTTP_Client_Async
                 return fail(ec, "connect");
 
             // Set a timeout on the operation
-            stream.expires_after(std::chrono::seconds(30));
+            stream.expires_after(std::chrono::seconds(30u));
 
             // Send the HTTP request to the remote host
             http::async_write(stream, request,
@@ -405,7 +405,7 @@ namespace Beast::Coroutine_HTTP_Client
             return fail(ec, "resolve");
 
         // Set the timeout.
-        stream.expires_after(std::chrono::seconds(30));
+        stream.expires_after(std::chrono::seconds(30u));
 
         // Make the connection on the IP address we get from a lookup
         stream.async_connect(serverEndpoint, yield[ec]);
@@ -418,7 +418,7 @@ namespace Beast::Coroutine_HTTP_Client
         request.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
 
         // Set the timeout.
-        stream.expires_after(std::chrono::seconds(30));
+        stream.expires_after(std::chrono::seconds(30u));
 
         // Send the HTTP request to the remote host
         http::async_write(stream, request, yield[ec]);
@@ -492,7 +492,7 @@ namespace Beast::Awaitable_Client
         tcp::resolver::results_type serverEndpoint = co_await resolver.async_resolve(host, port);
 
         // Set the timeout.
-        stream.expires_after(std::chrono::seconds(30));
+        stream.expires_after(std::chrono::seconds(30u));
 
         // Make the connection on the IP address we get from a lookup
         co_await stream.async_connect(serverEndpoint);
@@ -503,7 +503,7 @@ namespace Beast::Awaitable_Client
         req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
 
         // Set the timeout.
-        stream.expires_after(std::chrono::seconds(30));
+        stream.expires_after(std::chrono::seconds(30u));
 
         // Send the HTTP request to the remote host
         co_await http::async_write(stream, req);
@@ -562,13 +562,9 @@ namespace Beast::Awaitable_Client
 void Beast::TestAll([[maybe_unused]] const std::vector<std::string_view>& params)
 {
     // Client::SimpleHttpGetRequest();
-    // Client::SSL_Request_Test();
+    Client::SSL_Request_Test();
     // HTTP_Methods::Test();
-
     // HTTP_Client_Async::Send_Request();
-
     // Coroutine_HTTP_Client::runClient();
-
-
-    Awaitable_Client::sendRequest();
+    // Awaitable_Client::sendRequest();
 }

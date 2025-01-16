@@ -18,7 +18,7 @@ int main([[maybe_unused]] int argc,
 {
     const std::vector<std::string_view> params(argv + 1, argv + argc);
 
-    Networking::TestAll();
+    // Networking::TestAll();
     Beast::TestAll(params);
 
     return EXIT_SUCCESS;
