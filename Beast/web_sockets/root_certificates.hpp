@@ -10,7 +10,7 @@
 #ifndef BOOST_BEAST_EXAMPLE_COMMON_ROOT_CERTIFICATES_HPP
 #define BOOST_BEAST_EXAMPLE_COMMON_ROOT_CERTIFICATES_HPP
 
-#include <boost/asio/ssl.hpp>
+#include    <boost/asio/ssl.hpp>
 #include <string>
 
 /*
