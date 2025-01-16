@@ -93,7 +93,59 @@ namespace SimpleClient
 }
 
 
+namespace SslClient
+{
+    constexpr std::string host { "0.0.0.0" };
+    constexpr uint16_t port { 6789 };
+
+
+    void Client()
+    {
+        asio::io_context ioCtx;
+
+        // The SSL context is required, and holds certificates
+        ssl::context sslCtx { ssl::context::tlsv13_client };
+
+        // This holds the root certificate used for verification
+        // load_root_certificates(sslCtx);
+
+        tcp::resolver resolver { ioCtx };
+        websocket::stream<ssl::stream<tcp::socket>> wsStream { ioCtx, sslCtx };
+
+        auto const results = resolver.resolve(host, std::to_string(port));
+        const asio::ip::basic_endpoint<tcp> endpoint = asio::connect(beast::get_lowest_layer(wsStream), results);
+        std::cout << "endpoint: " << endpoint.address() << std::endl;
+
+        // Set SNI Hostname (many hosts need this to handshake successfully)
+        if(! SSL_set_tlsext_host_name(wsStream.next_layer().native_handle(), host.c_str()))
+            throw beast::system_error(beast::error_code(static_cast<int>(::ERR_get_error()),
+                asio::error::get_ssl_category()), "Failed to set SNI Hostname");
+
+        // Perform the SSL handshake
+        wsStream.next_layer().handshake(ssl::stream_base::client);
+
+        // Set a decorator to change the User-Agent of the handshake
+        wsStream.set_option(websocket::stream_base::decorator([](websocket::request_type& req){
+            req.set(http::field::user_agent,std::string(BOOST_BEAST_VERSION_STRING) +" websocket-client-coro");
+        }));
+
+        wsStream.handshake(host + ':' + std::to_string(port), "/chargeStatissonState");
+
+        constexpr std::string_view message { "CLIENT HELLO" };
+        const size_t bytesSend = wsStream.write(asio::buffer(message));
+        std::cout << "Bytes send: " << bytesSend << std::endl;
+
+        beast::flat_buffer buffer;
+        const size_t bytesRead = wsStream.read(buffer);
+        std::cout << "Bytes read: " << bytesRead << std::endl;
+
+        wsStream.close(websocket::close_code::normal);
+        std::cout << beast::make_printable(buffer.data()) << std::endl;
+    }
+}
+
 void WebSocketClients::TestAll()
 {
-    SimpleClient::Client();
+    // SimpleClient::Client();
+    SslClient::Client();
 }

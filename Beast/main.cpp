@@ -23,8 +23,8 @@ int main([[maybe_unused]] int argc,
 
     // Client::TestAll();
     // HTTPServer::TestAll();
-    WebSocketServers::TestAll();
-    // WebSocketClients::TestAll();
+    // WebSocketServers::TestAll();
+    WebSocketClients::TestAll();
 
 
     return EXIT_SUCCESS;

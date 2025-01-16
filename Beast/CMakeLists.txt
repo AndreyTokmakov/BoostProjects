@@ -42,5 +42,6 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         Boost::asio
         Boost::beast
         Boost::json
-        OpenSSL
+        crypto
+        ssl
 )
