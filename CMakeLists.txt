@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 project(BoostProjects)
 
 include(FetchContent)
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 26)
 
 message(STATUS "[dependency] fetching boost")
 set(BOOST_ENABLE_PYTHON OFF)
@@ -92,6 +92,7 @@ message (STATUS "\t\t Boost_LIBRARY_DIR: ${Boost_LIBRARY_DIR}")
 
 
 add_subdirectory(Asio)
+add_subdirectory(Beast)
 add_subdirectory(Collections)
 add_subdirectory(Communication)
 add_subdirectory(DateTime)

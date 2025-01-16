@@ -10,6 +10,8 @@ Description : CoroutineApps.cpp
 #include "CoroutineApps.h"
 
 #include <iostream>
+#include <format>
+#include <print>
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -64,16 +66,16 @@ namespace CoroutineApps::AcceptServer
     void Test()
     {
         asio::io_context ioContext;
-        tcp::acceptor acceptor(ioContext, tcp::endpoint(tcp::v4(), serverPort));
+        const tcp::endpoint serverAddress(tcp::v4(), serverPort);
+        tcp::acceptor acceptor(ioContext, serverAddress);
 
         //system::error_code error;
+        std::println("Server running at: {}:{}", serverAddress.address().to_string(), serverAddress.port());
         while (true)
         {
             tcp::socket clientSocket(ioContext);
             acceptor.accept(clientSocket);
-
-            std::cout << "Client connected" << std::endl;
-
+            std::println("Client connected");
             boost::asio::co_spawn(ioContext, echo(std::move(clientSocket)), boost::asio::detached);
         }
     }
@@ -259,12 +261,14 @@ namespace CoroutineApps::EchoServer_Single
 
 void CoroutineApps::TestAll()
 {
-    // AcceptServer::Test();
+    AcceptServer::Test();
 
     // EchoServer_One::runServer();
     // EchoServer_Refactor::runServer();
     // EchoServer_Single::runServer();
 
+
+    /*
     const uint32_t concurrency = std::thread::hardware_concurrency();
     asio::io_context service(concurrency);
 
@@ -272,5 +276,5 @@ void CoroutineApps::TestAll()
 
     for (auto i = 0u; i < concurrency; ++i) {
         workers.emplace_back(static_cast<std::size_t(asio::io_context::*)()>(&asio::io_context::run), &service);
-    }
+    }*/
 }

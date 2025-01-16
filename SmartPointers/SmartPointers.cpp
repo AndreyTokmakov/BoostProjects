@@ -26,7 +26,7 @@ namespace
     {
         long value {0};
 
-        explicit Long(int val = 0) : value {val} {
+        explicit Long(long val = 0) : value {val} {
             std::cout << "Long(" << value << ")\n";
         }
 
