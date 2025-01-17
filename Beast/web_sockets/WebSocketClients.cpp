@@ -158,8 +158,8 @@ namespace AsyncSslClient
         tcp::resolver resolver;
         websocket::stream<ssl::stream<beast::tcp_stream>> wsStream;
         beast::flat_buffer buffer;
-        std::string host;
-        std::string text;
+        std::string_view host;
+        std::string_view text;
 
     public:
 
@@ -168,16 +168,16 @@ namespace AsyncSslClient
         }
 
         // Start the asynchronous operation
-        void run(std::string_view host,
-                 char const* port,
-                 std::string_view  text)
+        void run(const std::string_view host,
+                 const int port,
+                 const std::string_view text)
         {
             // Save these for later
-            host = host;
-            text = text;
+            this->host = host;
+            this->text = text;
 
             // Look up the domain name
-            resolver.async_resolve(host, port,
+            resolver.async_resolve(host, std::to_string(port),
                 beast::bind_front_handler(&Session::on_resolve, shared_from_this()));
         }
 
@@ -290,8 +290,8 @@ namespace AsyncSslClient
 
     void Client()
     {
-        constexpr std::string host { "0.0.0.0" };
-        constexpr std::string text { "ererererere" };
+        constexpr std::string_view host { "0.0.0.0" };
+        constexpr std::string_view text { "ererererere" };
         constexpr uint16_t port { 6789 };
 
         // The io_context is required for all I/O
@@ -304,7 +304,7 @@ namespace AsyncSslClient
         // load_root_certificates(ctx);
 
         // Launch the asynchronous operation
-        std::make_shared<Session>(ioCtx, ctx)->run(host, port, text);
+        std::make_shared<Session>(ioCtx, ctx)->run(host, std::to_string(port).c_str(), text);
 
         // Run the I/O service. The call will return when the socket is closed.
         ioCtx.run();
