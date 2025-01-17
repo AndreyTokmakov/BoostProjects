@@ -12,6 +12,7 @@ Description : Boost Beast modules tests
 
 #include "Client.h"
 #include "HTTPServer.h"
+#include "HTTPS_Server.h"
 #include "WebSocketServers.h"
 #include "WebSocketClients.h"
 
@@ -22,10 +23,12 @@ int main([[maybe_unused]] int argc,
     const std::vector<std::string_view> args(argv + 1, argv + argc);
 
     // Client::TestAll();
-    // HTTPServer::TestAll();
-    // WebSocketServers::TestAll();
-    WebSocketClients::TestAll();
 
+    // HTTPServer::TestAll();
+    HTTPS_Server::TestAll();
+
+    // WebSocketServers::TestAll();
+    // WebSocketClients::TestAll();
 
     return EXIT_SUCCESS;
 }

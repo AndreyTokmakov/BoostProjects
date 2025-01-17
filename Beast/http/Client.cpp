@@ -280,11 +280,79 @@ namespace Client::HTTP_Client_Async
     }
 }
 
+namespace Client::SSL_Clients
+{
+    void SSL_Request_Test()
+    {
+        std::string host = "api64.ipify.org";
+
+        asio::io_context ioc;
+        ssl::context ctx(ssl::context::tlsv13_client);
+        ctx.set_default_verify_paths();
+
+        // Set up an SSL context
+        beast::ssl_stream<beast::tcp_stream> stream(ioc, ctx);
+        stream.set_verify_mode(ssl::verify_none);
+        stream.set_verify_callback([]([[maybe_unused]] bool preverified, [[maybe_unused]] ssl::verify_context& ctx) {
+            return true; // Accept any certificate
+        });
+        // Enable SNI
+        if (!SSL_set_tlsext_host_name(stream.native_handle(), host.c_str())){
+            beast::error_code ec{static_cast<int>(::ERR_get_error()), asio::error::get_ssl_category()};
+            throw beast::system_error{ec};
+        }
+        // Connect to the HTTPS server
+        ip::tcp::resolver resolver(ioc);
+        get_lowest_layer(stream).connect(resolver.resolve({host, "https"}));
+        get_lowest_layer(stream).expires_after(std::chrono::seconds(30u));
+
+        // Construct request
+        http::request<http::empty_body> req{http::verb::get, "/?format=json" , 11};
+        req.set(http::field::host, host);
+        req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+
+        // Send the request
+        stream.handshake(ssl::stream_base::client);
+        http::write(stream, req);
+
+        // Receive the response
+        beast::flat_buffer buffer;
+        http::response<http::dynamic_body> res;
+        http::read(stream, buffer, res);
+
+        // Parse the JSON response
+        boost::system::error_code err;
+        json::value j = json::parse(buffers_to_string(res.body().data()), err);
+
+        std::cout << "IP address: " << j.at("ip").as_string() << std::endl;
+
+        if (err) {
+            std::cerr << "Error parsing JSON: " << err.message() << std::endl;
+        }
+
+        beast::error_code errorCode;
+        const boost_swap_impl::error_code result = stream.shutdown(errorCode);
+        if (result) {
+            std::cerr << "stream.shutdown() failed" << std::endl;
+        }
+
+        if (errorCode == asio::error::eof) {
+            errorCode = {};
+        }
+        if (errorCode) {
+            throw beast::system_error{errorCode};
+        }
+    }
+}
+
 
 void Client::TestAll()
 {
     // Simple_Synch::httpGetRequest();
-    Simple_Synch::httpGetRequest_TcpSocket();
+    // Simple_Synch::httpGetRequest_TcpSocket();
 
     // HTTP_Client_Async::Send_Request();
+
+
+    SSL_Clients::SSL_Request_Test();
 }

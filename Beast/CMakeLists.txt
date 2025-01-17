@@ -28,12 +28,16 @@ message (STATUS "   OPENSSL_APPLINK_SOURCE: ${OPENSSL_APPLINK_SOURCE}")
 # include all components
 add_executable(${PROJECT_NAME}
         main.cpp
+        common/root_certificates.hpp
+        common/server_certificate.hpp
         http/Client.cpp
         http/HTTPServer.cpp
+        http/HTTPS_Server.cpp
         web_sockets/WebSocketServers.cpp
         web_sockets/WebSocketClients.cpp
 )
 
+include_directories("common")
 include_directories("http")
 include_directories("web_sockets")
 

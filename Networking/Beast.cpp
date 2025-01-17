@@ -378,7 +378,6 @@ namespace Beast::HTTP_Client_Async
     }
 }
 
-
 namespace Beast::Coroutine_HTTP_Client
 {
     static void fail(const beast::error_code& ec,
