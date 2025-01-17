@@ -415,7 +415,6 @@ namespace SSL_Asynch_Server
     }
 }
 
-namespace
 
 void WebSocketServers::TestAll()
 {
