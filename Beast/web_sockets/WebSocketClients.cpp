@@ -287,11 +287,34 @@ namespace AsyncSslClient
             std::cout << beast::make_printable(buffer.data()) << std::endl;
         }
     };
+
+    void Client()
+    {
+        constexpr std::string host { "0.0.0.0" };
+        constexpr std::string text { "ererererere" };
+        constexpr uint16_t port { 6789 };
+
+        // The io_context is required for all I/O
+        asio::io_context ioCtx;
+
+        // The SSL context is required, and holds certificates
+        ssl::context ctx{ssl::context::tlsv13_client};
+
+        // This holds the root certificate used for verification
+        // load_root_certificates(ctx);
+
+        // Launch the asynchronous operation
+        std::make_shared<Session>(ioCtx, ctx)->run(host, port, text);
+
+        // Run the I/O service. The call will return when the socket is closed.
+        ioCtx.run();
+    }
 }
 
 
 void WebSocketClients::TestAll()
 {
     // SimpleClient::Client();
-    SslClient::Client();
+    // SslClient::Client();
+    AsyncSslClient::Client();
 }

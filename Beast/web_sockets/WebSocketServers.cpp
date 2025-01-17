@@ -388,7 +388,7 @@ namespace SSL_Asynch_Server
     {
         constexpr std::string_view host { "0.0.0.0" };
         constexpr uint16_t port { 6789 };
-        constexpr uint16_t threads { 1 };
+        constexpr uint16_t threads { 4 };
 
         try
         {
@@ -402,10 +402,8 @@ namespace SSL_Asynch_Server
 
             std::vector<std::thread> workers;
             workers.reserve(threads - 1);
-            for (auto i = threads - 1; i > 0; --i)
-                workers.emplace_back([&ioCtx]{
-                    ioCtx.run();
-            });
+            for (int n = 0; n < threads - 1; ++n)
+                workers.emplace_back([&ioCtx]{ioCtx.run();});
             ioCtx.run();
         }
         catch (const std::exception& e)
