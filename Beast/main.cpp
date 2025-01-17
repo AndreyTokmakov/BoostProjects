@@ -22,10 +22,10 @@ int main([[maybe_unused]] int argc,
 {
     const std::vector<std::string_view> args(argv + 1, argv + argc);
 
-    // Client::TestAll();
+    Client::TestAll();
 
     // HTTPServer::TestAll();
-    HTTPS_Server::TestAll();
+    // HTTPS_Server::TestAll();
 
     // WebSocketServers::TestAll();
     // WebSocketClients::TestAll();
