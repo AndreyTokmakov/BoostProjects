@@ -46,7 +46,7 @@ Description : WebSocketServers.cpp
 
 #include "server_certificate.hpp"
 #include "root_certificates.hpp"
-
+#include "Utilities.h"
 
 namespace
 {

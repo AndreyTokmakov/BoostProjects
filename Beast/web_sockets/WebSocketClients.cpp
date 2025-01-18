@@ -46,7 +46,7 @@ Description : WebSocketClients.cpp
 
 #include "server_certificate.hpp"
 #include "root_certificates.hpp"
-
+#include "Utilities.h"
 
 namespace
 {
@@ -305,7 +305,7 @@ namespace AsyncSslClient
         constexpr std::string_view host { "0.0.0.0" };
         constexpr uint16_t port { 6789 };
 
-        const std::string text { "Some_Message" };
+        const std::string text { "Some_Message_" + Utilities::getCurrentTime() };
 
         // The io_context is required for all I/O
         asio::io_context ioCtx;
