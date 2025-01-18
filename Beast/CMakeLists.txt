@@ -7,7 +7,8 @@ SET(PROJECT_VERSION 1.0.0.0)
 SET(CMAKE_CXX_STANDARD  23)
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
-add_compile_options(-c -Wall -Werror -Wextra -O3 -std=c++26)
+# add_compile_options(-c -Wall -Werror -Wextra -O3 -std=c++26)
+add_compile_options(-c -Wall -Wextra -O3 -std=c++26)
 
 
 link_directories(${THIRD_PARTY_DIR}/openssl)
@@ -28,6 +29,7 @@ message (STATUS "   OPENSSL_APPLINK_SOURCE: ${OPENSSL_APPLINK_SOURCE}")
 # include all components
 add_executable(${PROJECT_NAME}
         main.cpp
+        utilities/Utilities.cpp
         common/root_certificates.hpp
         common/server_certificate.hpp
         http/Client.cpp
@@ -40,6 +42,7 @@ add_executable(${PROJECT_NAME}
 include_directories("common")
 include_directories("http")
 include_directories("web_sockets")
+include_directories("utilities")
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         pthread

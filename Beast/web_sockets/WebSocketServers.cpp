@@ -241,7 +241,7 @@ namespace SSL_Asynch_Server
         void on_run()
         {
             // Set the timeout.
-            beast::get_lowest_layer(wsStream).expires_after(std::chrono::seconds(30));
+            beast::get_lowest_layer(wsStream).expires_after(std::chrono::seconds(30u));
 
              // Perform the SSL handshake
             wsStream.next_layer().async_handshake(ssl::stream_base::server,
@@ -295,7 +295,14 @@ namespace SSL_Asynch_Server
 
             // Echo the message
             wsStream.text(wsStream.got_text());
-            wsStream.async_write(buffer.data(), beast::bind_front_handler(&Session::on_write, shared_from_this()));
+
+            std::string responseData = std::string {"["}
+                .append(beast::buffers_to_string(buffer.data())).append("]");
+            auto response = boost::asio::buffer(responseData, responseData.length());
+
+            wsStream.async_write(response,
+                                 beast::bind_front_handler(&Session::on_write, shared_from_this()));
+            // wsStream.async_write(buffer.data(),, beast::bind_front_handler(&Session::on_write, shared_from_this()));
         }
 
         void on_write(const beast::error_code& errorCode,

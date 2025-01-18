@@ -44,6 +44,9 @@ Description : WebSocketClients.cpp
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl.hpp>
 
+#include "server_certificate.hpp"
+#include "root_certificates.hpp"
+
 
 namespace
 {
@@ -55,6 +58,7 @@ namespace
     namespace ip = asio::ip;
     using tcp = ip::tcp;
 
+    [[maybe_unused]]
     void fail(const beast::error_code& errorCode,
               std::string_view message)
     {
@@ -158,8 +162,8 @@ namespace AsyncSslClient
         tcp::resolver resolver;
         websocket::stream<ssl::stream<beast::tcp_stream>> wsStream;
         beast::flat_buffer buffer;
-        std::string_view host;
-        std::string_view text;
+        std::string host;
+        std::string message;
 
     public:
 
@@ -168,13 +172,14 @@ namespace AsyncSslClient
         }
 
         // Start the asynchronous operation
-        void run(const std::string_view host,
+        void run(const std::string_view _host,
                  const int port,
                  const std::string_view text)
         {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
             // Save these for later
-            this->host = host;
-            this->text = text;
+            this->host.assign(_host);
+            this->message.assign(text);
 
             // Look up the domain name
             resolver.async_resolve(host, std::to_string(port),
@@ -184,11 +189,12 @@ namespace AsyncSslClient
         void on_resolve(const beast::error_code& errorCode,
                         const tcp::resolver::results_type& results)
         {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
             if (errorCode)
                 return fail(errorCode, "resolve");
 
             // Set a timeout on the operation
-            beast::get_lowest_layer(wsStream).expires_after(std::chrono::seconds(30));
+            beast::get_lowest_layer(wsStream).expires_after(std::chrono::seconds(30u));
 
             // Make the connection on the IP address we get from a lookup
             beast::get_lowest_layer(wsStream).async_connect(results,
@@ -198,11 +204,12 @@ namespace AsyncSslClient
         void on_connect(const beast::error_code& errorCode,
                         const tcp::resolver::results_type::endpoint_type& ep)
         {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
             if (errorCode)
                 return fail(errorCode, "connect");
 
             // Set a timeout on the operation
-            beast::get_lowest_layer(wsStream).expires_after(std::chrono::seconds(30));
+            beast::get_lowest_layer(wsStream).expires_after(std::chrono::seconds(30u));
 
             // Set SNI Hostname (many hosts need this to handshake successfully)
             if (! SSL_set_tlsext_host_name(wsStream.next_layer().native_handle(), host.c_str()))
@@ -224,6 +231,7 @@ namespace AsyncSslClient
 
         void on_ssl_handshake(const beast::error_code& errorCode)
         {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
             if (errorCode)
                 return fail(errorCode, "ssl_handshake");
 
@@ -245,17 +253,19 @@ namespace AsyncSslClient
 
         void on_handshake(const beast::error_code& errorCode)
         {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
             if (errorCode)
                 return fail(errorCode, "handshake");
 
             // Send the message
-            wsStream.async_write(asio::buffer(text),
+            wsStream.async_write(asio::buffer(message),
                 beast::bind_front_handler(&Session::on_write, shared_from_this()));
         }
 
         void on_write(const beast::error_code& errorCode,
                       std::size_t bytes_transferred)
         {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
             boost::ignore_unused(bytes_transferred);
             if (errorCode)
                 return fail(errorCode, "write");
@@ -267,6 +277,7 @@ namespace AsyncSslClient
         void on_read(const beast::error_code& errorCode,
                      std::size_t bytes_transferred)
         {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
             boost::ignore_unused(bytes_transferred);
             if (errorCode)
                 return fail(errorCode, "read");
@@ -278,6 +289,7 @@ namespace AsyncSslClient
 
         void on_close(const beast::error_code& errorCode)
         {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
             if (errorCode)
                 return fail(errorCode, "close");
 
@@ -291,8 +303,9 @@ namespace AsyncSslClient
     void Client()
     {
         constexpr std::string_view host { "0.0.0.0" };
-        constexpr std::string_view text { "ererererere" };
         constexpr uint16_t port { 6789 };
+
+        const std::string text { "Some_Message" };
 
         // The io_context is required for all I/O
         asio::io_context ioCtx;
@@ -304,7 +317,7 @@ namespace AsyncSslClient
         // load_root_certificates(ctx);
 
         // Launch the asynchronous operation
-        std::make_shared<Session>(ioCtx, ctx)->run(host, std::to_string(port).c_str(), text);
+        std::make_shared<Session>(ioCtx, ctx)->run(host, port, text);
 
         // Run the I/O service. The call will return when the socket is closed.
         ioCtx.run();
