@@ -14,8 +14,11 @@ add_compile_options(-c -Wall -Werror -Wextra -O3 -std=c++23)
 # include all components
 add_executable(${PROJECT_NAME}
         main.cpp
-        Experiments.cpp
-        CoroutineApps.cpp
+        BackgroundTasks/BackgroundTasks.cpp
+        Experiments/Experiments.cpp
+        Coroutines/CoroutineApps.cpp
+        Timeouts/Timeouts.cpp
+        Utils/Utilities.cpp
 )
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}

@@ -10,16 +10,20 @@ Description : Boost Asio modules tests
 #include <iostream>
 #include <vector>
 
-#include "Experiments.h"
-#include "CoroutineApps.h"
+#include "BackgroundTasks/BackgroundTasks.h"
+#include "Experiments/Experiments.h"
+#include "Coroutines/CoroutineApps.h"
+#include "Timeouts/Timeouts.h"
 
 int main([[maybe_unused]] int argc,
          [[maybe_unused]] char** argv)
 {
     const std::vector<std::string_view> args(argv + 1, argv + argc);
 
+    BackgroundTasks::TestAll();
     // Experiments::TestAll();
-    CoroutineApps::TestAll();
+    // CoroutineApps::TestAll();
+    // Timeouts::TestAll();
 
     return EXIT_SUCCESS;
 }
