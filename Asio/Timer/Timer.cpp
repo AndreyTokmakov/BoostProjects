@@ -16,14 +16,10 @@ Description : Timer.cpp
 #include <functional>
 #include <iostream>
 
-
 namespace
 {
     using namespace Utilities;
     using namespace std::chrono_literals;
-
-#define DEBUG  std::cout << getCurrentTime() << " "
-#define ERROR  std::cerr << getCurrentTime() << " "
 }
 
 namespace Timer

@@ -20,7 +20,6 @@ namespace
     using namespace Utilities;
     using namespace std::chrono_literals;
 
-#define DEBUG  std::cout << getCurrentTime() << " "
 }
 
 namespace BackgroundTasks

@@ -15,7 +15,7 @@ Description : Boost Asio modules tests
 #include "Coroutines/CoroutineApps.h"
 #include "Timeouts/Timeouts.h"
 #include "Timer/Timer.h"
-#include "Post_Dispatch_Tasks/PostDispatchTasks.h"
+#include "Threading/Threading.h"
 
 int main([[maybe_unused]] int argc,
          [[maybe_unused]] char** argv)
@@ -24,7 +24,7 @@ int main([[maybe_unused]] int argc,
 
     // BackgroundTasks::TestAll();
     // Timer::TestAll();
-    PostDispatchTasks::TestAll();
+    Threading::TestAll();
     // Experiments::TestAll();
     // CoroutineApps::TestAll();
     // Timeouts::TestAll();
