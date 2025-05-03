@@ -560,8 +560,8 @@ namespace Beast::Awaitable_Client
 
 void Beast::TestAll([[maybe_unused]] const std::vector<std::string_view>& params)
 {
-    // Client::SimpleHttpGetRequest();
-    Client::SSL_Request_Test();
+    Client::SimpleHttpGetRequest();
+    // Client::SSL_Request_Test();
     // HTTP_Methods::Test();
     // HTTP_Client_Async::Send_Request();
     // Coroutine_HTTP_Client::runClient();

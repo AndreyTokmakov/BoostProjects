@@ -21,8 +21,6 @@
 
 // https://panthema.net/2018/0912-Boost-Spirit-Tutorial/examples/
 
-#if 0
-
 namespace Spirit::Parsers
 {
     using namespace boost::spirit;
@@ -193,11 +191,13 @@ namespace Spirit::Grammar {
     }
 }
 
-#endif
+
 
 void Spirit::TestAll()
 {
-    // ParseTest();
+    using namespace Parsers;
+
+    ParseTest();
 
     // Parsers::test1();
     // Parsers::test2();

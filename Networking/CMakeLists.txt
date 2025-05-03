@@ -7,7 +7,7 @@ SET(PROJECT_VERSION 1.0.0.0)
 SET(CMAKE_CXX_STANDARD 20)
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
-add_compile_options(-c -Wall -Werror -Wextra -O3 -std=c++23)
+add_compile_options(-c -Wall -Wextra -O3 -std=c++23 -Wno-array-bound)
 
 find_package(OpenSSL REQUIRED)
 
