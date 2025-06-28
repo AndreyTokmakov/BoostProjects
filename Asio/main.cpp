@@ -16,6 +16,7 @@ Description : Boost Asio modules tests
 #include "Timeouts/Timeouts.h"
 #include "Timer/Timer.h"
 #include "Threading/Threading.h"
+#include "IO_Context/IoContext.h"
 
 int main([[maybe_unused]] int argc,
          [[maybe_unused]] char** argv)
@@ -24,10 +25,11 @@ int main([[maybe_unused]] int argc,
 
     // BackgroundTasks::TestAll();
     // Timer::TestAll();
-    Threading::TestAll();
+    // Threading::TestAll();
     // Experiments::TestAll();
     // CoroutineApps::TestAll();
     // Timeouts::TestAll();
+    IoContext::TestAll();
 
     return EXIT_SUCCESS;
 }

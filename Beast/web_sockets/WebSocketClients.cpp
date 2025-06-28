@@ -324,7 +324,6 @@ namespace AsyncSslClient
     }
 }
 
-
 void WebSocketClients::TestAll()
 {
     // SimpleClient::Client();
