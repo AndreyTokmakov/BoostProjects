@@ -17,19 +17,21 @@ Description : Boost Asio modules tests
 #include "Timer/Timer.h"
 #include "Threading/Threading.h"
 #include "IO_Context/IoContext.h"
+#include "ExceptionHandling/ExceptionHandling.h"
 
 int main([[maybe_unused]] int argc,
          [[maybe_unused]] char** argv)
 {
     const std::vector<std::string_view> args(argv + 1, argv + argc);
 
-    // BackgroundTasks::TestAll();
+    BackgroundTasks::TestAll();
     // Timer::TestAll();
     // Threading::TestAll();
     // Experiments::TestAll();
     // CoroutineApps::TestAll();
     // Timeouts::TestAll();
-    IoContext::TestAll();
+    // IoContext::TestAll();
+    // ExceptionHandling::TestAll();
 
     return EXIT_SUCCESS;
 }

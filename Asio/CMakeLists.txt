@@ -4,10 +4,11 @@ project(Asio)
 
 SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -pthread")
 SET(PROJECT_VERSION 1.0.0.0)
-SET(CMAKE_CXX_STANDARD 23)
+SET(CMAKE_CXX_STANDARD 26)
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
-add_compile_options(-c -Wall -Werror -Wextra -O3 -std=c++23)
+# add_compile_options(-c -Wall -Werror -Wextra -O3 -std=c++26)
+add_compile_options(-c -O3 -std=c++26)
 
 # find_package(OpenSSL REQUIRED)
 
@@ -22,6 +23,7 @@ add_executable(${PROJECT_NAME}
         Timeouts/Timeouts.cpp
         Utils/Utilities.cpp
         IO_Context/IoContext.cpp
+        ExceptionHandling/ExceptionHandling.cpp
 )
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
