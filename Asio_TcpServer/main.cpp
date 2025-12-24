@@ -35,9 +35,7 @@ namespace
         std::size_t rx_used = 0;
         std::size_t tx_used = 0;
 
-        explicit Session(boost::asio::io_context& io)
-            : socket(io)
-        {
+        explicit Session(boost::asio::io_context& io): socket(io){
         }
 
         void start() {
