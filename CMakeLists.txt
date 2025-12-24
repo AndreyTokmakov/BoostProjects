@@ -100,6 +100,7 @@ message (STATUS "\t\t Boost_LIBRARY_DIR: ${Boost_LIBRARY_DIR}")
 
 
 add_subdirectory(Asio)
+add_subdirectory(Asio_TcpServer)
 add_subdirectory(Beast)
 add_subdirectory(Collections)
 add_subdirectory(Communication)

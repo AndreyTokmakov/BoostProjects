@@ -17,7 +17,7 @@ namespace
 
 namespace Utilities
 {
-    std::string getCurrentTime(const std::chrono::time_point<std::chrono::system_clock>& timestamp) noexcept
+        std::string getCurrentTime(const std::chrono::time_point<std::chrono::system_clock>& timestamp) noexcept
     {
         const time_t time { std::chrono::system_clock::to_time_t(timestamp) };
         std::tm tm {};
