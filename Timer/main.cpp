@@ -17,7 +17,7 @@ int main([[maybe_unused]] int argc,
 {
     const std::vector<std::string_view> args(argv + 1, argv + argc);
 
-    Timer::TestAll();
+    timer::TestAll();
 
     return EXIT_SUCCESS;
 }

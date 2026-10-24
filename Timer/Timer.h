@@ -10,7 +10,7 @@ Description : Timer
 #ifndef CPPPROJECTS_TIMER_H
 #define CPPPROJECTS_TIMER_H
 
-namespace Timer {
+namespace timer {
     void TestAll();
 };
 
